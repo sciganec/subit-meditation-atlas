@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SUBIT · Meditation Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ RESET ═══════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Dark chrome */
+  --void:  #07090D;
+  --night: #0E1219;
+  --panel: #131720;
+  --border-d: rgba(255,255,255,.07);
+  /* Light surface */
+  --surface: #F4EFE7;
+  --page:    #EAE4DA;
+  --warm:    #DDD6C8;
+  --border-l: rgba(28,20,12,.11);
+  /* Text */
+  --ink:   #1C1510;
+  --muted: #6A5E50;
+  --faint: #9E8E7C;
+  /* Tradition colours — Buddhist / Hindu / Daoist */
+  --b:  #2E5CAA; --b-lt:#6090D8; --b-bg:rgba(46,92,170,.08);
+  --h:  #C07A10; --h-lt:#E8A830; --h-bg:rgba(192,122,16,.08);
+  --d:  #1B6B4A; --d-lt:#40B87E; --d-bg:rgba(27,107,74,.08);
+  /* Alchemical */
+  --me:   #C8900A;
+  --we:   #A82020;
+  --you:  #4A6070;
+  --they: #7A9AAA;
+  /* Trigram rainbow */
+  --t0:#2E6DB4;--t1:#2E8B57;--t2:#6B8E23;--t3:#B8860B;
+  --t4:#C0671E;--t5:#A02020;--t6:#6B1F4A;--t7:#5B3E8B;
+  /* Typography */
+  --serif:'Cinzel',serif;
+  --body: 'Cormorant Garamond',Georgia,serif;
+  --ui:   'Inter',system-ui,sans-serif;
+  --mono: 'JetBrains Mono',monospace;
+  /* Layout */
+  --nav: 66px;
+  --det: 390px;
+  --hdr: 52px;
+  --r:   6px;
+}
+
+html,body{height:100%;font-family:var(--body);background:var(--void);color:var(--ink);font-size:16px;line-height:1.6}
+
+/* ═══════════ SHELL ═══════════ */
+#app{
+  display:grid;
+  grid-template-columns:var(--nav) 1fr var(--det);
+  grid-template-rows:var(--hdr) 1fr;
+  height:100vh;
+  opacity:0;transition:opacity .5s;
+}
+#app.show{opacity:1}
+
+/* ═══════════ TOPBAR ═══════════ */
+.tb{
+  grid-column:1/-1;
+  background:var(--night);
+  border-bottom:1px solid var(--border-d);
+  display:flex;align-items:center;
+  padding:0 1.2rem;gap:.9rem;
+  position:relative;z-index:50;
+}
+.tb-logo{
+  font-family:var(--serif);font-size:1rem;font-weight:600;
+  letter-spacing:.26em;color:var(--h-lt);
+  text-shadow:0 0 28px rgba(232,168,48,.35);
+}
+.tb-formula{
+  font-family:var(--ui);font-size:.62rem;font-weight:400;
+  letter-spacing:.04em;color:rgba(232,168,48,.32);
+}
+/* Tradition filter pills in topbar */
+.tb-trads{display:flex;gap:.35rem;margin-left:.4rem}
+.tbp{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.1em;
+  padding:.16rem .5rem;border-radius:20px;
+  border:1px solid currentColor;
+  opacity:.4;cursor:pointer;
+  transition:opacity .18s,background .18s;
+}
+.tbp:hover{opacity:.8}
+.tbp.on{opacity:1;background:rgba(255,255,255,.08)}
+.tbp.tb-b{color:var(--b-lt)}
+.tbp.tb-h{color:var(--h-lt)}
+.tbp.tb-d{color:var(--d-lt)}
+/* Counter */
+.tb-right{margin-left:auto}
+.tb-count{
+  font-family:var(--mono);font-size:.58rem;
+  color:rgba(232,168,48,.4);
+  background:rgba(232,168,48,.06);
+  padding:.18rem .5rem;border-radius:20px;
+  border:1px solid rgba(232,168,48,.1);
+}
+/* Bottom progress stripe */
+.tb-stripe{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--b-lt),var(--h-lt),var(--d-lt))}
+
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar{
+  background:var(--night);
+  border-right:1px solid var(--border-d);
+  display:flex;flex-direction:column;
+  padding:.4rem 0;z-index:30;overflow:hidden;
+}
+/* Main nav */
+.nv{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.18rem;padding:.65rem 0;width:100%;
+  border:none;background:transparent;
+  border-left:2px solid transparent;
+  cursor:pointer;color:rgba(255,255,255,.22);
+  transition:color .17s,background .17s,border-color .17s;
+  font-family:var(--mono);
+}
+.nv:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.03)}
+.nv.on{color:var(--h-lt);border-left-color:var(--h-lt);background:rgba(232,168,48,.05)}
+.nv-ic{font-size:1rem;line-height:1}
+.nv-lb{font-family:var(--ui);font-size:.58rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;opacity:.7}
+.nsep{height:1px;background:var(--border-d);margin:.25rem .6rem}
+.nsec-lbl{
+  font-family:var(--ui);font-size:.55rem;font-weight:500;letter-spacing:.06em;
+  color:rgba(255,255,255,.25);text-align:center;
+  padding:.22rem 0 .08rem;text-transform:uppercase;
+}
+.nsec{padding:.25rem .28rem;display:flex;flex-direction:column;gap:.16rem}
+/* Sidebar filter pills */
+.spill{
+  display:flex;flex-direction:column;align-items:center;gap:.07rem;
+  padding:.38rem .12rem;border-radius:var(--r);
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.025);
+  cursor:pointer;color:rgba(255,255,255,.28);
+  transition:all .17s;width:100%;font-family:var(--mono);
+}
+.spill:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)}
+.spill.on{border-color:currentColor;background:rgba(255,255,255,.055)}
+.sp-ic{font-size:.88rem;line-height:1}
+.sp-lb{font-family:var(--ui);font-size:.52rem;font-weight:500;letter-spacing:.04em;opacity:.85}
+
+/* ═══════════ MAIN PANEL ═══════════ */
+.main{background:var(--surface);overflow-y:auto;overflow-x:hidden;position:relative}
+.main::-webkit-scrollbar{width:4px}
+.main::-webkit-scrollbar-thumb{background:rgba(28,20,12,.14);border-radius:2px}
+.tab{display:none}
+.tab.on{display:block}
+
+/* ── Filter bar ── */
+.fbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--page);
+  border-bottom:1px solid var(--border-l);
+  padding:.6rem 1.2rem;
+  display:flex;flex-wrap:wrap;gap:.55rem;align-items:flex-end;
+  box-shadow:0 2px 8px rgba(28,20,12,.06);
+}
+.fg{display:flex;flex-direction:column;gap:.2rem}
+.fg-lbl{
+  font-family:var(--ui);font-size:.65rem;font-weight:500;letter-spacing:.04em;
+  color:var(--faint);text-transform:uppercase;
+}
+.fg-row{display:flex;gap:.26rem;flex-wrap:wrap}
+.fchip{
+  display:flex;align-items:center;gap:.28rem;
+  padding:.3rem .65rem;border-radius:20px;
+  border:1.5px solid var(--border-l);
+  background:white;color:var(--muted);
+  font-family:var(--ui);font-size:.8rem;font-weight:500;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.fchip:hover{border-color:rgba(192,122,16,.35);color:var(--ink);background:var(--warm)}
+.fchip.on{color:white;border-color:transparent;box-shadow:0 2px 10px rgba(0,0,0,.16)}
+.fsep{width:1px;background:var(--border-l);align-self:stretch;flex-shrink:0}
+.fclear{
+  padding:.26rem .58rem;border-radius:20px;
+  border:1.5px solid var(--border-l);background:transparent;
+  color:var(--faint);font-family:var(--ui);font-size:.7rem;font-weight:400;
+  letter-spacing:.02em;cursor:pointer;transition:all .15s;
+  align-self:flex-end;
+}
+.fclear:hover{border-color:var(--h);color:var(--h)}
+.fclear.hide{visibility:hidden}
+
+/* ── Atlas grid ── */
+.atlas-body{padding:.9rem 1.1rem 3rem}
+.phase-sec{margin-bottom:1.4rem}
+.phase-hdr{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.44rem .75rem;border-radius:var(--r);
+  margin-bottom:.5rem;
+  transition:filter .18s;cursor:default;
+}
+.ph-gl{font-size:1.05rem}
+.ph-name{font-family:var(--serif);font-size:.82rem;font-weight:500;letter-spacing:.08em}
+.ph-who{font-family:var(--mono);font-size:.56rem;opacity:.55;margin-left:.2rem}
+.ph-desc{font-style:italic;font-size:.7rem;margin-left:auto;opacity:.55;max-width:220px;text-align:right}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:6px}
+
+.card{
+  position:relative;background:white;
+  border-radius:var(--r);border:1.5px solid rgba(0,0,0,.07);
+  padding:.6rem .55rem .5rem;cursor:pointer;overflow:hidden;
+  display:flex;flex-direction:column;gap:.25rem;min-height:96px;
+  transition:transform .13s ease,box-shadow .13s ease,border-color .13s ease;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,0,0,.1)}
+.card.sel{
+  transform:translateY(-3px);border-width:2px;
+}
+.card.t-buddhist.sel{border-color:var(--b);box-shadow:0 0 0 3px rgba(46,92,170,.15),0 5px 20px rgba(0,0,0,.1)}
+.card.t-hindu.sel   {border-color:var(--h);box-shadow:0 0 0 3px rgba(192,122,16,.15),0 5px 20px rgba(0,0,0,.1)}
+.card.t-daoist.sel  {border-color:var(--d);box-shadow:0 0 0 3px rgba(27,107,74,.15), 0 5px 20px rgba(0,0,0,.1)}
+
+.c-top{display:flex;align-items:center;gap:.25rem}
+.c-num{font-family:var(--mono);font-size:.48rem;color:var(--faint)}
+.c-coords{display:flex;gap:.16rem;margin-left:auto}
+.c-coord{
+  font-family:var(--mono);font-size:.46rem;
+  padding:.03rem .2rem;border-radius:3px;
+  background:rgba(0,0,0,.05);color:var(--muted);
+}
+.c-trad{
+  font-family:var(--mono);font-size:.4rem;letter-spacing:.07em;
+  padding:.05rem .3rem;border-radius:3px;
+  width:fit-content;opacity:.8;
+}
+.card.t-buddhist .c-trad{background:var(--b-bg);color:var(--b)}
+.card.t-hindu    .c-trad{background:var(--h-bg);color:var(--h)}
+.card.t-daoist   .c-trad{background:var(--d-bg);color:var(--d)}
+.c-name{
+  font-family:var(--body);font-size:.8rem;font-weight:600;
+  line-height:1.3;flex:1;display:flex;align-items:flex-end;
+  min-height:2.2em;
+}
+.c-foot{display:flex;align-items:center;gap:.22rem;margin-top:.04rem}
+.c-bits{font-family:var(--mono);font-size:.42rem;color:rgba(0,0,0,.17);letter-spacing:.05em;flex:1}
+.c-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.c-stripe{position:absolute;bottom:0;left:0;right:0;height:3px}
+
+/* ═══════════ DETAIL PANEL ═══════════ */
+.det{
+  background:var(--panel);
+  border-left:1px solid var(--border-d);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.det::-webkit-scrollbar{width:3px}
+.det::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+.det-empty{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:.8rem;padding:2.5rem;text-align:center;
+}
+.det-empty-ic{font-size:2.8rem;opacity:.07;animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.det-empty-h{font-family:var(--ui);font-size:.9rem;font-weight:500;letter-spacing:.05em;color:rgba(255,255,255,.25)}
+.det-empty-s{font-family:var(--mono);font-size:.53rem;letter-spacing:.1em;color:rgba(255,255,255,.1);line-height:1.9}
+
+/* Detail content */
+.det-tbar{height:3px;flex-shrink:0}
+.det-head{padding:1rem 1.1rem .8rem;border-bottom:1px solid var(--border-d);flex-shrink:0}
+.det-phase{
+  display:inline-flex;align-items:center;gap:.32rem;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
+  padding:.18rem .55rem;border-radius:20px;
+  border:1px solid currentColor;margin-bottom:.65rem;
+}
+.det-chips{display:flex;gap:.32rem;flex-wrap:wrap;margin-bottom:.45rem}
+.det-chip{
+  display:flex;align-items:center;gap:.26rem;
+  font-size:.74rem;padding:.18rem .5rem;
+  border:1px solid rgba(255,255,255,.1);border-radius:5px;
+  color:rgba(255,255,255,.55);font-family:var(--body);
+}
+.det-ic{font-size:.66rem;opacity:.65}
+.det-bits{display:flex;align-items:center;gap:.38rem;flex-wrap:wrap}
+.bits-raw{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:rgba(255,255,255,.15)}
+.tgp{font-family:var(--mono);font-size:.52rem;padding:.07rem .4rem;border-radius:10px;letter-spacing:.04em}
+
+.det-body{padding:.9rem 1.1rem 1.5rem;flex:1}
+.d-name{font-family:var(--body);font-size:1.2rem;font-weight:600;line-height:1.28;margin-bottom:.16rem}
+.d-tag{font-style:italic;font-size:.8rem;color:rgba(255,255,255,.33);margin-bottom:.28rem}
+.d-tlab{
+  display:inline-flex;align-items:center;gap:.32rem;
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;
+  padding:.14rem .48rem;border-radius:3px;margin-bottom:.85rem;
+}
+.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem}
+.d-f{display:flex;flex-direction:column;gap:.08rem}
+.d-fl{font-family:var(--ui);font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:.05rem}
+.d-fv{font-family:var(--ui);font-size:.82rem;color:rgba(255,255,255,.75);line-height:1.5}
+/* History block */
+.d-hist{
+  padding:.6rem .8rem;border-radius:var(--r);
+  margin-bottom:.85rem;border:1px solid rgba(255,255,255,.07);
+}
+.d-hist-h{
+  display:flex;align-items:center;gap:.35rem;
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.18em;
+  text-transform:uppercase;margin-bottom:.3rem;
+  opacity:.8;
+}
+.d-hist-t{font-size:.82rem;line-height:1.82;color:rgba(255,255,255,.62);font-style:italic}
+/* Sections */
+.d-sec{margin-bottom:.85rem}
+.d-sh{font-family:var(--mono);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.26rem;opacity:.7}
+.d-txt{font-size:.87rem;line-height:1.82;color:rgba(255,255,255,.78)}
+.d-instr{font-style:italic;color:rgba(255,255,255,.83)}
+.d-mantra{
+  padding:.58rem .88rem;border-radius:0 var(--r) var(--r) 0;
+  border-left:2px solid currentColor;
+  font-size:.96rem;font-family:var(--body);font-style:italic;
+  line-height:1.5;margin-bottom:.82rem;
+}
+.d-vars{display:flex;flex-direction:column;gap:.18rem;margin-bottom:.72rem}
+.d-var{
+  display:flex;align-items:baseline;gap:.45rem;
+  font-size:.8rem;color:rgba(255,255,255,.58);padding:.1rem 0;
+}
+.d-var::before{content:'◦';opacity:.45;flex-shrink:0;font-size:.72rem}
+.d-closes{
+  font-size:.74rem;color:rgba(255,255,255,.28);
+  font-style:italic;line-height:1.65;
+  border-top:1px solid rgba(255,255,255,.06);
+  padding-top:.62rem;
+}
+
+/* ═══════════ THEORY ═══════════ */
+/* Theory tab: flex column, topnav sticky */
+#tab-theory.on{display:flex;flex-direction:column}
+.t-topnav{
+  flex-shrink:0;
+  background:var(--page);
+  border-bottom:2px solid var(--border-l);
+  display:flex;padding:0 1.4rem;gap:0;
+  box-shadow:0 2px 8px rgba(28,20,12,.06);
+}
+.tnb{
+  display:flex;align-items:center;gap:.38rem;
+  padding:.65rem .85rem;border:none;background:transparent;
+  font-family:var(--ui);font-size:.82rem;font-weight:500;
+  color:var(--muted);cursor:pointer;
+  border-bottom:2.5px solid transparent;margin-bottom:-2px;
+  transition:color .17s,border-color .17s;white-space:nowrap;
+}
+.tnb:hover{color:var(--ink)}
+.tnb.on{color:var(--ink);border-bottom-color:currentColor}
+.tnb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:transform .17s}
+.tnb.on .tnb-dot{transform:scale(1.35)}
+.tnb.tb{color:var(--b)}.tnb.tb.on{border-bottom-color:var(--b)}
+.tnb.th{color:var(--h)}.tnb.th.on{border-bottom-color:var(--h)}
+.tnb.td{color:var(--d)}.tnb.td.on{border-bottom-color:var(--d)}
+
+.t-scroll-area{flex:1;overflow-y:auto;background:var(--surface)}
+.t-scroll-area::-webkit-scrollbar{width:4px}
+.t-scroll-area::-webkit-scrollbar-thumb{background:rgba(28,20,12,.14);border-radius:2px}
+.t-body{padding:1.4rem 1.6rem 3rem;max-width:880px}
+
+/* Sections */
+.t-sec{display:none;animation:tfade .22s ease}
+.t-sec.on{display:block}
+@keyframes tfade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.t-hd{
+  font-family:var(--serif);font-size:1rem;font-weight:500;
+  letter-spacing:.07em;color:var(--ink);
+  margin:0 0 .65rem;padding-bottom:.38rem;
+  border-bottom:1px solid var(--border-l);
+}
+.t-intro{
+  font-size:.88rem;line-height:1.82;color:#4A3C2A;
+  font-style:italic;border-left:3px solid var(--h);
+  padding:.28rem 0 .28rem .88rem;margin-bottom:1rem;
+}
+
+/* Taxonomy cards */
+.t-taxo{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem}
+.t-ti{
+  background:white;border-radius:var(--r);
+  border:1px solid var(--border-l);
+  padding:.55rem .8rem;
+  display:grid;grid-template-columns:24px 1fr auto;
+  align-items:start;gap:.5rem;
+  transition:background .14s;
+}
+.t-ti:hover{background:var(--page)}
+.t-tn{font-family:var(--mono);font-size:.62rem;color:var(--h);font-weight:500;padding-top:.1rem}
+.t-tb .t-tnm{font-family:var(--body);font-size:.88rem;font-weight:600;margin-bottom:.12rem}
+.t-tb .t-tmc{font-size:.79rem;color:var(--muted);line-height:1.5}
+.t-tq{font-family:var(--mono);font-size:.53rem;color:var(--faint);font-style:italic;text-align:right;padding-top:.12rem;white-space:nowrap}
+
+/* Axes cards */
+.t-axes{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.5rem;margin-bottom:.9rem}
+.t-ac{
+  background:white;border-radius:var(--r);
+  border:1px solid var(--border-l);
+  padding:.6rem .75rem;transition:box-shadow .15s;
+}
+.t-ac:hover{box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.t-ac-h{display:flex;align-items:center;gap:.38rem;margin-bottom:.25rem}
+.t-ac-sym{font-size:.95rem;line-height:1}
+.t-ac-name{font-family:var(--serif);font-size:.8rem;font-weight:500}
+.t-ac-bits{font-family:var(--mono);font-size:.56rem;color:var(--muted);margin-left:auto}
+.t-ac-desc{font-size:.76rem;color:var(--muted);line-height:1.5;font-style:italic}
+.t-ac-sub{font-size:.7rem;color:var(--faint);margin-top:.15rem}
+
+/* Tradition header */
+.t-trad-card{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.75rem .95rem;border-radius:var(--r);
+  margin-bottom:.75rem;border:1px solid rgba(0,0,0,.07);
+}
+.t-trad-icon{font-size:1.5rem;line-height:1;flex-shrink:0;margin-top:.1rem}
+.t-trad-nm{font-family:var(--serif);font-size:.95rem;font-weight:500;margin-bottom:.18rem}
+.t-trad-desc{font-size:.8rem;line-height:1.6;color:var(--muted)}
+.t-schools{display:flex;gap:.28rem;flex-wrap:wrap;margin-top:.32rem}
+.t-school{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.07em;
+  padding:.08rem .38rem;border-radius:3px;
+  background:rgba(0,0,0,.05);color:var(--muted);
+}
+
+/* Practice accordion */
+.t-pracs{display:flex;flex-direction:column}
+.tpi{border:1px solid var(--border-l);border-top:none;background:white;transition:background .13s}
+.tpi:first-child{border-top:1px solid var(--border-l);border-radius:var(--r) var(--r) 0 0}
+.tpi:last-child{border-radius:0 0 var(--r) var(--r)}
+.tpi:hover:not(.open){background:var(--page)}
+.tpi.open{background:rgba(0,0,0,.008)}
+
+.tpi-hd{
+  display:grid;
+  grid-template-columns:28px 1fr auto 28px;
+  align-items:center;gap:.5rem;
+  padding:.72rem .95rem;cursor:pointer;
+  user-select:none;
+}
+.tpi-hd:hover .tpi-tags{display:flex;gap:.25rem;align-items:center;flex-shrink:0}
+.tpi-arr{opacity:.8}
+.tpi-num{font-family:var(--mono);font-size:.53rem;color:var(--faint)}
+.tpi-main .tpi-nm{font-family:var(--body);font-size:.98rem;font-weight:600;line-height:1.2}
+.tpi-main .tpi-sb{font-size:.73rem;color:var(--muted);font-style:italic;margin-top:.05rem}
+.tpi-meta{display:flex;gap:.22rem;align-items:center;justify-content:flex-end}
+.tpi-ww{
+  font-family:var(--mono);font-size:.48rem;
+  padding:.08rem .3rem;border-radius:3px;
+  background:rgba(0,0,0,.05);color:var(--muted);
+}
+.tpi-who{
+  font-family:var(--mono);font-size:.5rem;
+  padding:.08rem .38rem;border-radius:3px;
+  border:1px solid currentColor;font-weight:500;
+}
+.tpi-tags{display:flex;gap:.25rem;align-items:center;flex-shrink:0}
+.tpi-arr{
+  font-size:.65rem;color:var(--faint);
+  transition:transform .2s,opacity .15s;opacity:.4;
+  text-align:center;
+}
+.tpi.open .tpi-tags{display:flex;gap:.25rem;align-items:center;flex-shrink:0}
+.tpi-arr{transform:rotate(90deg);opacity:.8}
+
+.tpi-body{
+  display:none;
+  padding:.1rem .95rem .9rem;
+  border-top:1px solid var(--border-l);
+}
+.tpi.open .tpi-body{display:block;animation:tfade .2s ease}
+
+.tpi-dur{
+  font-family:var(--mono);font-size:.58rem;color:var(--muted);
+  padding:.4rem 0 .5rem;
+  display:flex;align-items:center;gap:.35rem;
+  border-bottom:1px solid var(--border-l);margin-bottom:.6rem;
+}
+.tpi-dtrad{
+  font-family:var(--mono);font-size:.5rem;
+  padding:.08rem .38rem;border-radius:3px;margin-left:auto;
+}
+/* Tradition colours in tpi */
+.trad-buddhist .tpi-hist{background:var(--b-bg)}
+.trad-buddhist .tpi-hh,.trad-buddhist .tpi-slbl{color:var(--b)}
+.trad-buddhist .tpi-tech{border-color:var(--b)}
+.trad-buddhist .tpi-var::before,.trad-buddhist .tpi-open{color:var(--b)}
+.trad-buddhist .tpi-who{color:var(--b)}
+.trad-buddhist .tpi-dtrad{background:var(--b-bg);color:var(--b)}
+
+.trad-hindu .tpi-hist{background:var(--h-bg)}
+.trad-hindu .tpi-hh,.trad-hindu .tpi-slbl{color:var(--h)}
+.trad-hindu .tpi-tech{border-color:var(--h)}
+.trad-hindu .tpi-var::before,.trad-hindu .tpi-open{color:var(--h)}
+.trad-hindu .tpi-who{color:var(--h)}
+.trad-hindu .tpi-dtrad{background:var(--h-bg);color:var(--h)}
+
+.trad-daoist .tpi-hist{background:var(--d-bg)}
+.trad-daoist .tpi-hh,.trad-daoist .tpi-slbl{color:var(--d)}
+.trad-daoist .tpi-tech{border-color:var(--d)}
+.trad-daoist .tpi-var::before,.trad-daoist .tpi-open{color:var(--d)}
+.trad-daoist .tpi-who{color:var(--d)}
+.trad-daoist .tpi-dtrad{background:var(--d-bg);color:var(--d)}
+
+.tpi-hist{padding:.5rem .72rem;border-radius:var(--r);margin-bottom:.6rem;border:1px solid rgba(0,0,0,.07)}
+.tpi-hh{display:flex;align-items:center;gap:.32rem;font-family:var(--mono);font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.25rem}
+.tpi-ht{font-size:.81rem;line-height:1.78;font-style:italic;color:#3A2A18}
+.tpi-slbl{font-family:var(--mono);font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.2rem;margin-top:.45rem}
+.tpi-desc{font-size:.84rem;line-height:1.78;color:var(--ink);margin-bottom:.55rem}
+.tpi-tech{
+  font-size:.82rem;line-height:1.78;font-style:italic;
+  padding:.45rem .68rem;border-radius:0 4px 4px 0;
+  border-left:2px solid;background:var(--page);
+  margin-bottom:.58rem;
+}
+.tpi-vars{display:flex;flex-direction:column;gap:.1rem;margin-bottom:.45rem}
+.tpi-var{font-size:.77rem;color:var(--ink);padding:.09rem 0 .09rem .65rem;position:relative}
+.tpi-var::before{content:'◦';position:absolute;left:.1rem}
+.tpi-open{
+  display:inline-flex;align-items:center;gap:.38rem;
+  margin-top:.62rem;padding:.32rem .78rem;
+  border-radius:20px;border:1.5px solid currentColor;
+  background:transparent;font-family:var(--body);
+  font-size:.76rem;letter-spacing:.07em;cursor:pointer;
+  transition:background .17s;font-weight:500;
+}
+.tpi-open:hover{background:rgba(0,0,0,.04)}
+
+/* ═══════════ MOBILE ═══════════ */
+@media(max-width:820px){
+  :root{--nav:50px;--det:0px}
+  #app{grid-template-columns:var(--nav) 1fr}
+  .det{display:none}
+  #dsheet{
+    position:fixed;inset:0;z-index:200;
+    background:var(--panel);
+    display:none;flex-direction:column;overflow-y:auto;
+    animation:sld .22s ease;
+  }
+  #dsheet.open{display:flex}
+  @keyframes sld{from{transform:translateY(36px);opacity:0}to{transform:none;opacity:1}}
+  .sheet-back{
+    display:flex;align-items:center;gap:.45rem;
+    padding:.65rem .95rem;background:transparent;border:none;
+    color:rgba(255,255,255,.38);font-family:var(--mono);
+    font-size:.58rem;letter-spacing:.1em;cursor:pointer;
+    border-bottom:1px solid var(--border-d);flex-shrink:0;
+  }
+  .sheet-back:hover{color:rgba(255,255,255,.7)}
+}
+@media(min-width:821px){#dsheet{display:none!important}.sheet-back{display:none}}
+/* Scrollbar global */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,.22);border-radius:2px}
+
+/* ── Enhanced card sizing ── */
+.card{min-height:110px;padding:.75rem .7rem .6rem}
+.card-name{font-size:.84rem;min-height:2.6em}
+.card-trad{font-size:.44rem;letter-spacing:.1em;padding:.08rem .38rem}
+.card-coord{font-size:.5rem;padding:.05rem .25rem}
+.card-num{font-size:.52rem}
+
+/* ── Better phase headers ── */
+.phase-hdr{padding:.55rem .9rem;margin-bottom:.65rem}
+.ph-name{font-size:.84rem;letter-spacing:.06em}
+.ph-desc{font-size:.75rem}
+
+/* ── Sidebar improvements ── */
+.nav-item{padding:.8rem 0;gap:.28rem}
+.ni-icon{font-size:1.15rem}
+.ni-lbl{font-size:.42rem;letter-spacing:.14em}
+.fpill{padding:.42rem .18rem;gap:.1rem;border-radius:5px}
+.fp-ic{font-size:.9rem}
+.fp-nm{font-size:.39rem}
+.sb-slbl{font-size:.4rem;letter-spacing:.2em;padding:.3rem 0 .15rem}
+
+/* ── Theory nav improvements ── */
+.t-topnav{
+  padding:0 1.2rem;gap:.2rem;
+  box-shadow:0 1px 0 var(--border-l);
+}
+.t-navbtn{
+  padding:.78rem .85rem;
+  font-size:.92rem;gap:.4rem;
+  border-bottom-width:3px;
+}
+.t-navdot{width:7px;height:7px}
+
+/* ── Theory practice items ── */
+.tpi-name{font-size:1rem}
+.tpi-sub{font-size:.78rem;margin-top:.08rem}
+.tpi-hd{padding:.85rem 1.1rem;gap:.7rem}
+.tpi-hist-text{font-size:.85rem;line-height:1.82}
+.tpi-desc{font-size:.88rem;line-height:1.8}
+.tpi-tech{font-size:.85rem;line-height:1.8;padding:.55rem .8rem}
+
+/* ── Detail panel readability ── */
+.d-name{font-size:1.2rem}
+.d-tag{font-size:.86rem;margin-bottom:.4rem}
+.d-hist-text{font-size:.86rem;line-height:1.85}
+.d-text{font-size:.9rem;line-height:1.82}
+.d-fval{font-size:.86rem}
+.d-var{font-size:.83rem}
+.d-closes{font-size:.8rem}
+
+/* ── Filter chips ── */
+.fchip{padding:.38rem .8rem;font-size:.85rem;border-radius:22px}
+.fg-lbl{font-size:.5rem;letter-spacing:.2em}
+
+/* ── Scroll areas ── */
+.atlas-body{padding:1.1rem 1.3rem 3rem}
+.t-body{padding:1.5rem 1.7rem 3rem}
+
+/* ── Phase section spacing ── */
+.phase-sec{margin-bottom:1.8rem}
+.card-grid{gap:8px}
+
+/* ── Trad intro card ── */
+.t-trad-intro{padding:.9rem 1.1rem;margin-bottom:.9rem}
+.t-trad-intro-name{font-size:1.05rem;margin-bottom:.22rem}
+.t-trad-intro-desc{font-size:.85rem;line-height:1.65}
+.t-trad-schools{margin-top:.4rem;gap:.35rem}
+.t-school{font-size:.52rem;padding:.12rem .45rem}
+
+/* ── Taxo items ── */
+.t-taxo-item{padding:.65rem .9rem;border-radius:var(--r)}
+.t-taxo-name{font-size:.92rem;margin-bottom:.16rem}
+.t-taxo-mech{font-size:.82rem}
+.t-taxo-q{font-size:.6rem}
+
+/* ── Axis cards ── */
+.t-axis-card{padding:.7rem .85rem}
+.t-axis-name{font-size:.84rem}
+.t-axis-desc{font-size:.8rem;margin-top:.15rem}
+.t-axis-sub{font-size:.74rem;margin-top:.18rem;line-height:1.5}
+
+/* ── Empty state ── */
+.d-empty-h{font-size:.92rem;letter-spacing:.14em}
+.d-empty-s{font-size:.62rem;line-height:2}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- TOPBAR -->
+  <header class="tb">
+    <div class="tb-logo">SUBIT</div>
+    <div class="tb-formula">PRIME · SYNC · SCAN · CORE · {0,1}⁶</div>
+    <div class="tb-trads">
+      <span class="tbp tb-b" onclick="filterTrad('buddhist')" id="tbadge-buddhist">Buddhist</span>
+      <span class="tbp tb-h" onclick="filterTrad('hindu')"    id="tbadge-hindu">Hindu</span>
+      <span class="tbp tb-d" onclick="filterTrad('daoist')"   id="tbadge-daoist">Daoist</span>
+    </div>
+    <div class="tb-right"><span class="tb-count" id="tbCount">64 архетипи</span></div>
+    <div class="tb-stripe"></div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <button class="nv on" id="nv-atlas"  onclick="switchTab('atlas')">
+      <span class="nv-ic">⬡</span><span class="nv-lb">Атлас</span>
+    </button>
+    <button class="nv"    id="nv-theory" onclick="switchTab('theory')">
+      <span class="nv-ic">◎</span><span class="nv-lb">Теорія</span>
+    </button>
+    <div class="nsep"></div>
+    <div class="nsec-lbl">WHO</div>
+    <div class="nsec" id="sb-who"></div>
+    <div class="nsep"></div>
+    <div class="nsec-lbl">WHERE</div>
+    <div class="nsec" id="sb-where"></div>
+    <div class="nsep"></div>
+    <div class="nsec-lbl">WHEN</div>
+    <div class="nsec" id="sb-when"></div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- ATLAS -->
+    <div class="tab on" id="tab-atlas">
+      <div class="fbar" id="fbar"></div>
+      <div class="atlas-body" id="atlas"></div>
+    </div>
+    <!-- THEORY -->
+    <div class="tab" id="tab-theory">
+      <div class="t-topnav" id="t-topnav"></div>
+      <div class="t-scroll-area">
+        <div class="t-body" id="theory"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- DETAIL -->
+  <aside class="det" id="detail">
+    <div class="det-empty">
+      <div class="det-empty-ic">⬡</div>
+      <div class="det-empty-h">Оберіть архетип</div>
+      <div class="det-empty-s">Натисніть на картку<br>в атласі або практику<br>в теорії</div>
+    </div>
+  </aside>
+</div>
+
+<!-- MOBILE SHEET -->
+<div id="dsheet">
+  <button class="sheet-back" onclick="closeSheet()">← Назад</button>
+  <div id="dsheet-content"></div>
+</div>
+
+<script>
+
+'use strict';
+const PHASES = {
+  ME:   {name:'PRIME',bits:'10',color:'#C8900A',bg:'rgba(200,144,10,.07)',  glyph:'◐',desc:'Індивідуальне · EAST · SPRING · 10'},
+  WE:   {name:'SYNC', bits:'11',color:'#A82020',bg:'rgba(168,32,32,.07)',   glyph:'●',desc:'Колективне · SOUTH · SUMMER · 11'},
+  YOU:  {name:'SCAN', bits:'01',color:'#4A6072',bg:'rgba(74,96,114,.07)',   glyph:'◑',desc:'Реляційне · WEST · AUTUMN · 01'},
+  THEY: {name:'CORE', bits:'00',color:'#7A9AAA',bg:'rgba(122,154,170,.07)', glyph:'○',desc:'Архетипне · NORTH · WINTER · 00'},
+};
+const DIRS = {
+  EAST: {sym:'↑',el:'Повітря',qi:'Висхідна',   color:'#B8860B',mode:'PRIME'},
+  SOUTH:{sym:'→',el:'Вогонь', qi:'Трансформуюча',color:'#8B2500',mode:'SYNC'},
+  WEST: {sym:'↓',el:'Вода',   qi:'Низхідна',   color:'#1B5E6A',mode:'SCAN'},
+  NORTH:{sym:'←',el:'Земля',  qi:'Стала',      color:'#374247',mode:'CORE'},
+};
+const SEAS = {
+  SPRING:{sym:'○',en:'Висхідна',color:'#5D7A3E',lbl:'Весна',mode:'PRIME'},
+  SUMMER:{sym:'●',en:'Пікова',  color:'#8B6914',lbl:'Літо', mode:'SYNC'},
+  AUTUMN:{sym:'◑',en:'Низхідна',color:'#7A4022',lbl:'Осінь',mode:'SCAN'},
+  WINTER:{sym:'◯',en:'Стала',  color:'#2B4F6E',lbl:'Зима', mode:'CORE'},
+};
+const TC=['#2E6DB4','#2E8B57','#6B8E23','#B8860B','#C0671E','#A02020','#6B1F4A','#5B3E8B'];
+const TN=['Blue','Green','Lime','Amber','Orange','Crimson','Burgundy','Violet'];
+const TRAD_C = {
+  buddhist:{md:'#2E5CAA',lt:'#5B87D0',bg:'rgba(46,92,170,.08)',lbl:'Буддійська традиція'},
+  hindu:   {md:'#C07A10',lt:'#E8A830',bg:'rgba(192,122,16,.08)',lbl:'Індуїстська традиція'},
+  daoist:  {md:'#1B6B4A',lt:'#3DA874',bg:'rgba(27,107,74,.08)', lbl:'Даоська традиція'},
+};
+const MAP64=[
+  ['ME','EAST','SPRING','Nadi Shodhana — Наді Шодхана','hindu'],
+  ['ME','EAST','SUMMER','Anapanasati — усвідомлення дихання','buddhist'],
+  ['ME','EAST','AUTUMN','Anapanasati — 16 кроків Будди','buddhist'],
+  ['ME','EAST','WINTER','Kumbhaka — тиша у затримці','hindu'],
+  ['ME','SOUTH','SPRING','Kundalini — пробудження Шакті','hindu'],
+  ['ME','SOUTH','SUMMER','Trataka — погляд на полум\'я','hindu'],
+  ['ME','SOUTH','AUTUMN','Tonglen — брати і давати','buddhist'],
+  ['ME','SOUTH','WINTER','Atma Vichara — Хто я?','hindu'],
+  ['ME','WEST','SPRING','Yoga Nidra з Санкальпою','hindu'],
+  ['ME','WEST','SUMMER','Vipassana — скан тіла','buddhist'],
+  ['ME','WEST','AUTUMN','Pratyahara — відступ усередину','hindu'],
+  ['ME','WEST','WINTER','Zuowang — сидіти у забутті','daoist'],
+  ['ME','NORTH','SPRING','Japa Mala — 108 повторень','hindu'],
+  ['ME','NORTH','SUMMER','Zazen — Shikantaza','buddhist'],
+  ['ME','NORTH','AUTUMN','Neti Neti — не це, не це','hindu'],
+  ['ME','NORTH','WINTER','Dzogchen — Rigpa','buddhist'],
+  ['WE','EAST','SPRING','Групова Pranayama','hindu'],
+  ['WE','EAST','SUMMER','Kirtan — спільний спів мантр','hindu'],
+  ['WE','EAST','AUTUMN','Групове Anapanasati','buddhist'],
+  ['WE','EAST','WINTER','Групова Pranayama — зимовий Цігун','daoist'],
+  ['WE','SOUTH','SPRING','Kirtan Nritya — священний танець','hindu'],
+  ['WE','SOUTH','SUMMER','Kirtan — злиття у звуку','hindu'],
+  ['WE','SOUTH','AUTUMN','Tonglen — колективний','buddhist'],
+  ['WE','SOUTH','WINTER','Zazen — Мауна Сангхи','buddhist'],
+  ['WE','WEST','SPRING','Групова Yoga Nidra','hindu'],
+  ['WE','WEST','SUMMER','Metta — коло любові','buddhist'],
+  ['WE','WEST','AUTUMN','Karuna — спільне поле','buddhist'],
+  ['WE','WEST','WINTER','Mauna — обітниця мовчання','buddhist'],
+  ['WE','NORTH','SPRING','Qigong — Ба Дуань Цзінь','daoist'],
+  ['WE','NORTH','SUMMER','Zazen — Sesshin','buddhist'],
+  ['WE','NORTH','AUTUMN','Цзі-Цзу — шанування предків','daoist'],
+  ['WE','NORTH','WINTER','Дунчжі — земляна церемонія','daoist'],
+  ['YOU','EAST','SPRING','Metta — відкриття серця','buddhist'],
+  ['YOU','EAST','SUMMER','Metta — доброта на ходу','buddhist'],
+  ['YOU','EAST','AUTUMN','Karuna — серце зі стражданням','buddhist'],
+  ['YOU','EAST','WINTER','Dharma Shravana — слухання Сутр','buddhist'],
+  ['YOU','SOUTH','SPRING','Tonglen для конкретної людини','buddhist'],
+  ['YOU','SOUTH','SUMMER','Sampatti — злиття свідомостей','hindu'],
+  ['YOU','SOUTH','AUTUMN','Tonglen для ворога','buddhist'],
+  ['YOU','SOUTH','WINTER','Pratipaksha Bhavana','hindu'],
+  ['YOU','WEST','SPRING','Shravana — мистецтво слухання','hindu'],
+  ['YOU','WEST','SUMMER','Vichara — самодослідження','hindu'],
+  ['YOU','WEST','AUTUMN','Karuna — стійка присутність','buddhist'],
+  ['YOU','WEST','WINTER','Upeksha — рівновага свідка','buddhist'],
+  ['YOU','NORTH','SPRING','Koan — питання про Іншого','buddhist'],
+  ['YOU','NORTH','SUMMER','Zazen у парі — лице до лиця','buddhist'],
+  ['YOU','NORTH','AUTUMN','Neti Neti у стосунках','hindu'],
+  ['YOU','NORTH','WINTER','Anatta — медитація на не-я','buddhist'],
+  ['THEY','EAST','SPRING','Pitri Puja — мантра предків','hindu'],
+  ['THEY','EAST','SUMMER','Nei Guan — споглядання архетипів','daoist'],
+  ['THEY','EAST','AUTUMN','Metta для предків','buddhist'],
+  ['THEY','EAST','WINTER','Dhyana — зимове мовчання','hindu'],
+  ['THEY','SOUTH','SPRING','Mandala Offering','buddhist'],
+  ['THEY','SOUTH','SUMMER','Dzogchen — Rigpa у вогні','buddhist'],
+  ['THEY','SOUTH','AUTUMN','Phowa — перенесення свідомості','buddhist'],
+  ['THEY','SOUTH','WINTER','Дунчжі — ритуальна тиша','daoist'],
+  ['THEY','WEST','SPRING','Nei Guan — весняне очищення','daoist'],
+  ['THEY','WEST','SUMMER','Open Monitoring — Rigpa','buddhist'],
+  ['THEY','WEST','AUTUMN','Maranasati — пам\'ять смерті','buddhist'],
+  ['THEY','WEST','WINTER','Yoga Nidra — сон свідка','hindu'],
+  ['THEY','NORTH','SPRING','Nei Guan — споглядання Безмежного','daoist'],
+  ['THEY','NORTH','SUMMER','Zuowang — забуття у розквіті','daoist'],
+  ['THEY','NORTH','AUTUMN','Dzogchen Trekcho','buddhist'],
+  ['THEY','NORTH','WINTER','Sunyata — чиста порожнеча','buddhist']
+].map(([who,where,when,prac,trad],idx)=>({id:`${who}-${where}-${when}`,who,where,when,prac,trad,idx}));
+const PD = {
+'ME-EAST-SPRING':{
+  name:'Перший подих дня',
+  tagline:'Піднімаєш Qi на початку дня',
+  trad:'Патанджалі · Хатха-Йога Прадіпіка · XV ст.',
+  duration:'15 хвилин',
+  posture:'Сидячи, хребет прямий',
+  bodyNote:'Носове дихання, живіт розслаблений, груди нерухомі',
+  history:'Наді Шодхана (नाडी शोधन) — четверта гілка Аштанга-йоги Патанджалі (II ст. до н.е.). Хатха-Йога Прадіпіка (XV ст.) систематизує у сучасному вигляді. Streeter et al. (2010): підвищує GABA, знижує тривогу.',
+  instruction:'Сядьте рівно перед сходом сонця. Закрийте праву ніздрю і вдихайте лівою на 4 рахунки, затримайте на 16, видихайте правою на 8. Повторіть у зворотному напрямку. Відчуйте як кожен цикл піднімає легке тепло від основи хребта вгору до тімені.',
+  mantra:'Со — Хам (вдих — видих)',
+  closes:'Залиште долоні на колінах і просто відчуйте тишу між циклами дихання перед тим як почати день.',
+  variants:['Nadi Shodhana: баланс Іди/Пінгали','Ujjayi: активація парасимпатики','Bhastrika: очищення і активація','Kumbhaka: внутрішня тиша у затримці']
+},
+'ME-EAST-SUMMER':{
+  name:'Жива присутність дихання',
+  tagline:'Повна увага на кожному вдиху',
+  trad:'Тхеравада · Буддізм · 2500 р. традиції',
+  duration:'30 хвилин',
+  posture:'Лотос або напівлотос',
+  bodyNote:'Точка уваги — простір під ніздрями, де повітря торкається шкіри',
+  history:'Anapanasati Sutta (MN 118) — Будда проголосив через 6 тижнів після просвітлення. С.Н. Гоєнка відродив через У Ба Кхіна (Бірма). Зниження кортизолу і підвищення ВСР у нейронаукових дослідженнях.',
+  instruction:'Спрямуйте всю увагу на кінчик носа де повітря входить і виходить. Не керуйте диханням — просто спостерігайте його природний ритм. Коли розум відходить, помітьте це без засудження і м\'яко повертайтесь до відчуття. У цьому піку літньої уваги кожен вдих є повним і завершеним сам по собі.',
+  mantra:'Анапана — просто це, прямо зараз',
+  closes:'Перед тим як відкрити очі, зробіть три глибоких усвідомлених вдихи і подякуйте тілу за його вірну роботу.',
+  variants:['Samatha: утримання до Jhana','Vipassana: спостереження непостійності','Ходяча версія: крок + дихання','MBSR адаптація Кабат-Зінна (1979)']
+},
+'ME-EAST-AUTUMN':{
+  name:'Шістнадцять кроків повернення',
+  tagline:'Відпускаєш з кожним видихом',
+  trad:'Тхеравада · Гоєнка-традиція',
+  duration:'45 хвилин',
+  posture:'Сидячи нерухомо',
+  bodyNote:'Підйом і опускання живота як якір, губи злегка торкаються',
+  history:'16-кроковий Anapanasati — чотири тетради Anapanasati Sutta. Практикується на 10-денних ретритах Гоєнки (Dhamma centers у 100+ країнах).',
+  instruction:'Дихайте природно і спостерігайте весь цикл: довгий вдих, довгий видих, відчуття всього тіла, заспокоєння тіла. Помічайте непостійність кожного відчуття — як воно виникає, досягає піку і зникає. Осінь вчить відпускати: дозвольте кожному видиху забирати те що більше не потрібне.',
+  mantra:'Нічого не тримати, нічого не відштовхувати',
+  closes:'Залишіться у нерухомості ще дві хвилини після завершення, відчуваючи глибокий спокій що залишається.',
+  variants:['Перша тетрада: тіло (кроки 1-4)','Друга тетрада: відчуття (5-8)','Третя тетрада: розум (9-12)','Четверта: дгарми (13-16)']
+},
+'ME-EAST-WINTER':{
+  name:'Тиша між подихами',
+  tagline:'Зупинка де живе вічне тепер',
+  trad:'Хатха-Йога · Кашмірський Шаїзм · XVII ст.',
+  duration:'20 хвилин',
+  posture:'Нерухомо, тепло вкритись',
+  bodyNote:'Кумбхака: затримка м\'яка, горло відкрите, обличчя розслаблене',
+  history:'Кумбхака (कुम्भक) описана у Шіва-Самхіті та Гхеранда-Самхіті (XVII ст.). В Кашмірськомy Шаїзмі пауза між диханнями — Пранашакті — прямий досвід абсолютної свідомості.',
+  instruction:'Вдихніть повільно і повністю. Затримайте дихання після вдиху — не через силу, а через м\'яке утримання. У цій затримці зупиніться і помітьте що є. Потім видихніть повністю і затримайтесь після видиху. У цих двох паузах живе зимова тиша — простір між хвилями де немає ні вдиху ні видиху, ні минулого ні майбутнього.',
+  mantra:'Між вдихом і видихом — я є',
+  closes:'Повертайтесь до звичайного дихання поступово, несучи у собі пам\'ять тієї тиші.',
+  variants:['Антара-кумбхака після вдиху','Бахья-кумбхака після видиху','Box Breathing 4-4-4-4 (сучасна)','Wim Hof Method як екстремальна версія']
+},
+'ME-SOUTH-SPRING':{
+  name:'Пробудження вогняної змії',
+  tagline:'Кундаліні рухається вгору',
+  trad:'Шакта-тантра · Кашмірський Шаїзм · X ст.',
+  duration:'25 хвилин',
+  posture:'Сидячи прямо, мула-бандха активна',
+  bodyNote:'Три бандхи активні під час кумбхаки, обличчя м\'яке',
+  history:'Кундаліні Шакті описана у Хатха-Йога Прадіпіці (XV ст.) і Тантра-Лоці Абхінавагупти (X ст.). Ягі Бхаджан привів на Захід у 1969 р. Гроф: Spiritual Emergency — спонтанні пробудження.',
+  instruction:'Скоротіть м\'язи промежини (мула-бандха) і утримуйте. Виконайте бгастріку — 20 швидких рівних вдихів-видихів через ніс — і затримайте на повних легенях з уддіяна-бандхою (живіт вгору). Уявляйте золоте тепло що піднімається від основи хребта крізь кожну чакру. Повторіть 3 цикли.',
+  mantra:'Ом Шакті — вогонь прокидається',
+  closes:'Після останнього видиху лежіть у шавасані 5 хвилин, дозволяючи енергії рівномірно розподілитись.',
+  variants:['Шакті-пат: передача від вчителя','Kundalini Yoga Ягі Бхаджана','Лайя Йога: розчинення чакр','Pranayama + Бандхи + Кумбхака']
+},
+'ME-SOUTH-SUMMER':{
+  name:'Полум\'я без миготіння',
+  tagline:'Одна точка, увесь розум',
+  trad:'Натха-традиція · Хатха-Йога Прадіпіка · XV ст.',
+  duration:'20 хвилин',
+  posture:'Сидячи, свічка на рівні очей',
+  bodyNote:'Тіло нерухоме, дихання природне, плечі опущені',
+  history:'Тратака (त्राटक) — шоста з шести Шаткарм у Хатха-Йога Прадіпіці. Натха-традиція (Горакшанатх, IX–X ст.). Погляд є засобом передачі Шакті (Дріштіпат).',
+  instruction:'Запаліть свічку і дивіться на полум\'я не кліпаючи якомога довше. Коли очі наповнюються сльозами — закрийте їх і утримуйте яскравий образ полум\'я у просторі між бровами. Коли він зникне — відкрийте очі знову. Чергуйте зовнішній і внутрішній погляд. Літнє полум\'я спалює розсіяність.',
+  mantra:'Тrat-рак — незмигний погляд, незмигна увага',
+  closes:'Заплющте очі і утримуйте внутрішнє полум\'я у третьому оці так довго як можете.',
+  variants:['Тратака на бінду (чорне коло)','Тратака на образі Ішта-девати','Внутрішня Тратака','Шамбхаві мудра — між бровами']
+},
+'ME-SOUTH-AUTUMN':{
+  name:'Прийняти власний біль',
+  tagline:'Твій біль — двері до серця',
+  trad:'Тибетська · Lojong · XII ст.',
+  duration:'20 хвилин',
+  posture:'Сидячи або лежачи',
+  bodyNote:'Дихання в область серця, грудна клітка розкривається на вдиху',
+  history:'Tonglen (གཐོང་ལེན) — центральна практика Lojong Атіші (982–1054). Чекава Єше Дордже (XII ст.) — 7 точок тренування розуму. R.Davidson (UW, 2004): 8 тижнів Tonglen підвищують gamma-хвилі.',
+  instruction:'Принесіть до уваги щось болісне у вашому житті прямо зараз. На вдиху уявляйте цей біль як темне важке диміло — і свідомо вдихайте його в центр грудної клітки, не відштовхуючи. На видиху відправляйте з серця назовні чисте тепле золоте світло — полегшення і простір. Повторюйте, поступово пом\'якшуючи опір.',
+  mantra:'Беру в себе — даю назад світло',
+  closes:'Покладіть руку на серце і відчуйте його тепло — свідчення того що ви пройшли через це.',
+  variants:['Для власного болю','Для конкретної людини','Для ворога','Груповий Tonglen у колі']
+},
+'ME-SOUTH-WINTER':{
+  name:'Хто питає у тиші',
+  tagline:'Джерело знаходиш повернувшись',
+  trad:'Адвайта Веданта · Рамана Махарші · 1901',
+  duration:'30 хвилин',
+  posture:'Сидячи нерухомо у темряві',
+  bodyNote:'Тіло повністю нерухоме, дихання стає дуже тонким',
+  history:'Атма-Вічара (आत्मविचार) відкрилась Рамані Махарші (1879–1950) спонтанно у 16 років. \'Хто я?\' (1901) — базовий текст. Сучасні вчителі: Адьяшанті, Руперт Спіра, Муджі.',
+  instruction:'Коли виникає будь-яка думка або відчуття, запитайте тихо всередині: «Кому це виникає?» Відповідь прийде: «Мені». Тоді: «Хто цей я?» Не шукайте словесної відповіді — стежте за самим відчуттям «я» назад до його джерела. У зимовій тиші цей пошук стає особливо чітким: де закінчується думка і починається той хто думає?',
+  mantra:'Хто я? — тільки це питання',
+  closes:'Залишайтесь у тій тиші що відкривається коли питання розчиняється в своєму власному джерелі.',
+  variants:['30–60 хв формальна практика','У момент сильної емоції','Після Neti Neti','Безперервна практика 24/7']
+},
+'ME-WEST-SPRING':{
+  name:'Посів намірів у сні',
+  tagline:'Санкальпа входить у глибину',
+  trad:'Тантра · Самкх\'я · Bihar School · 1970-і',
+  duration:'35 хвилин',
+  posture:'Лежачи у шавасані',
+  bodyNote:'Повне розслаблення тіла, дихання стає автономним і повільним',
+  history:'Йога-Нідра систематизована Свамі Сатьянандою (Bihar, 1970-і). NSDR (Ендрю Губерман, Стенфорд): 20 хв відновлює дофамін як 90-хв сон. iRest-протокол — NIH-фінансований для ПТСР.',
+  instruction:'Ляжте і повністю розслабтеся. Сформулюйте одне просте позитивне речення — ваш намір (санкальпу): «Я здоровий і спокійний» або «Я відкритий до змін». Повторіть його тричі з повним відчуттям. Потім слідкуйте за обертанням уваги по тілу від правої руки до лівої і далі. У стані між сном і неспанням повторіть санкальпу ще тричі.',
+  mantra:'Санкальпа: [ваше речення] — тричі',
+  closes:'Поверніться на бік і полежіть кілька хвилин перш ніж встати — несіть намір з собою.',
+  variants:['11-стадійна Сатьянанди','NSDR (Губерман, без санкальпи)','iRest для ветеранів з ПТСР','Самостійна без запису']
+},
+'ME-WEST-SUMMER':{
+  name:'Хвиля що проходить крізь',
+  tagline:'Сканування у повній присутності',
+  trad:'MBSR · Тхеравада · UMass Medical Center · 1979',
+  duration:'45 хвилин',
+  posture:'Лежачи нерухомо',
+  bodyNote:'Тіло повністю нерухоме, увага рухається самостійно',
+  history:'Боді-скан розробив Джон Кабат-Зінн у 1979 р. (UMass, MBSR). Коріння — у Випасані Гоєнки. fMRI: активує інсулу, знижує Default Mode Network.',
+  instruction:'Починаючи від маківки голови, повільно рухайте увагу вниз по тілу ділянками шириною 3-5 сантиметрів. Помічайте будь-яке відчуття — тепло, тиск, поколювання, оніміння або навіть відсутність відчуттів. Не намагайтесь нічого змінити. У літньому піку присутності дозвольте увазі стати хвилею що проходить крізь тіло без залишку.',
+  mantra:'Відчуваю і відпускаю, відчуваю і відпускаю',
+  closes:'Коли дійдете до стіп, повільно поверніться увагою вгору — і відчуйте тіло як єдине ціле.',
+  variants:['Gross sensations для початківців','Subtle vibrations для досвідчених','MBSR 45-хв версія','Yoga Nidra як м\'яка версія']
+},
+'ME-WEST-AUTUMN':{
+  name:'Пратьяхара — відступ усередину',
+  tagline:'Відкликаю чуття від зовнішнього',
+  trad:'Раджа-Йога · Патанджалі · Аштанга',
+  duration:'20–30 хв',
+  posture:'Шавасана або сидячи',
+  bodyNote:'Очі закриті, вуха не зосереджуються на звуках, тіло нерухоме',
+  history:'Пратьяхара (प्रत्याहार — \'відведення, відступ\') — п\'ята з восьми гілок Аштанга-йоги Патанджалі (Йога-Сутри 2.54-2.55). Буквально: \'відводити чуття від їхніх об\'єктів\'. Є мостом між зовнішніми практиками (Яма, Ніяма, Асана, Пранаяма) і внутрішніми (Дгарана, Дгьяна, Самадхі). Без Пратьяхари неможлива глибока медитація.',
+  instruction:'Ляжте або сядьте і заплющте очі. Почніть свідомо відкликати увагу від звуків — не затикаючи вуха а просто перестаючи їх обробляти. Від тактильних відчуттів — тіло є але ви у нього не занурені. Від смаку і запаху. Поступово чуття стягуються всередину як черепаха ховає лапи. Відчуйте тишу всередині.',
+  mantra:'Чуття повертаються додому',
+  closes:'Після Пратьяхари Дгарана (концентрація) виникає природно — розум вже стабілізований.',
+  variants:['Пратьяхара як підготовка до Дгарани','Йога Нідра як форма Пратьяхари','Трактат Шива-Свародая про відкликання','Буддійська паралель: Сенсорна депривація у ретриті']
+},
+'ME-WEST-WINTER':{
+  name:'Велике забуття',
+  tagline:'Зникаєш у Дао повністю',
+  trad:'Класичний Даосизм · Чжуанцзі · IV ст. до н.е.',
+  duration:'40 хвилин',
+  posture:'Сидячи або лежачи у теплі',
+  bodyNote:'Wu wei — жодного зусилля, тіло утримується тільки структурою',
+  history:'Цзо-Ван (坐忘) описаний у Чжуанцзі (369–286 до н.е.). Сунь Сіміао (581–682) систематизує 7 ступенів. Традиція Квань-Чжен (Повне Вдосконалення, XII ст.).',
+  instruction:'Відпустіть послідовно: зовнішній обряд і форму — відпустіть. Думки про завдання і ролі — відпустіть. Потік думок — відпустіть. Відчуття «я» і особистості — відпустіть. Відчуття тіла — відпустіть. Залишіться у великому забутті де немає ні практикуючого ні практики, ні Дао ні того хто шукає Дао.',
+  mantra:'Цзо ван — сиджу і забуваю',
+  closes:'Поверніться дуже повільно — спочатку помітьте дихання, потім тіло, потім кімнату навколо.',
+  variants:['Qiwulun: Чжуанцзі як підготовка','Нейдан: Цзо-Ван як вища стадія','Вуцзі: нерухомість до/після','Сон як природний Цзо-Ван']
+},
+'ME-NORTH-SPRING':{
+  name:'Сто вісім імен',
+  tagline:'Звук як вектор до тиші',
+  trad:'Бгакті-йога · Тантра · Трансцендентальна Медитація',
+  duration:'25 хвилин',
+  posture:'Сидячи, Мала у правій руці',
+  bodyNote:'Права рука тримає Малу, вказівний палець не торкається зерен',
+  history:'Джапа (जप) — центральна практика Бгакті-йоги. Мала 108 зерен: 108 = відстань Земля-Сонце у сонячних діаметрах. ТМ Маха Йогі (1958): 600+ рецензованих публікацій.',
+  instruction:'Візьміть Малу (108 зерен). Великим пальцем рухайте зерна одне за одним, повторюючи мантру на кожне зерно. Починайте вголос, поступово переходьте до пошепки, а потім до подумки — це найтонший і найглибший рівень. Весняна енергія підіймає кожне повторення як насіння у землю.',
+  mantra:'Ом Намах Шивая — або ваша особиста мантра',
+  closes:'Після останнього зерна опустіть Малу і посидьте у тиші що залишається після звуку.',
+  variants:['Вайкарі (вголос) → Упамшу → Манасіка','Кіртан: груповий спів як Джапа','ТМ: особиста мантра 2×20 хв','Нембуцу (японська буддійська форма)']
+},
+'ME-NORTH-SUMMER':{
+  name:'Просто сидіти',
+  tagline:'Немає мети — є присутність',
+  trad:'Сото Дзен · Доген Зенджі · XIII ст.',
+  duration:'35 хвилин',
+  posture:'Лотос, напівлотос або сейза',
+  bodyNote:'Спина утримується самостійно, підборіддя злегка підтягнуте',
+  history:'Шікантаза (只管打坐) — Доген Зенджі (1200–1253) після навчання у Китаї у Тендо Нюджо. \'Практика і просвітлення єдині.\' Lutz et al. (2004): підвищує gamma-синхронність.',
+  instruction:'Сядьте у позу. Dhyana mudra: права долоня у лівій, великі пальці торкаються. Очі напівзакриті, погляд 45° вниз. Хребет прямий без напруження. Не медитуйте «про» щось і не намагайтесь досягти стану. Просто сидіть. Думки виникають — добре. Зникають — добре. Це і є шикантаза.',
+  mantra:'Тільки це сидіння — 只管打坐',
+  closes:'Вклоніться подушці для медитації перед тим як встати — це теж частина практики.',
+  variants:['Кінхін: ходяча медитація між сесіями','Саму: медитація у щоденній праці','Koан Zazen (Rinzai): з активним коаном','Сесшін: 7-денний ретрит (12+ год/день)']
+},
+'ME-NORTH-AUTUMN':{
+  name:'Не тіло, не думки, не я',
+  tagline:'Залишається те що не відкидається',
+  trad:'Адвайта Веданта · Шанкара · VIII ст.',
+  duration:'30 хвилин',
+  posture:'Сидячи нерухомо',
+  bodyNote:'Нерухомість тіла допомагає зосередитись на ментальному відкиданні',
+  history:'Неті-Неті (नेति नेति) — Бріхадараньяка Упанішада (700–800 до н.е.): Ягняволк\'я про Брахмана. Шанкара (788–820) систематизує у Адвайті. Нісаргадатта: \'Я є Те\' (1973).',
+  instruction:'Зосередьтесь на тілі. «Я усвідомлюю своє тіло — отже я не є тілом». Перейдіть до відчуттів: «Я усвідомлюю ці відчуття — отже я не є ними». До думок: «Я усвідомлюю думки — я не є думками». До відчуття «я»: «Я усвідомлюю ego — я не є ego». Продовжуйте поки не виникне питання: хто усвідомлює?',
+  mantra:'Не це, не це — нети нети',
+  closes:'Залишайтесь у відкритому просторі усвідомленості що виявляється після заперечення всього решта.',
+  variants:['Jnana-yoga: 4-кроковий шлях','Аналіз трьох станів (бодрствування/сон/глибокий сон)','Поєднання з Atma Vichara','Руперт Спіра: недуалістична адаптація']
+},
+'ME-NORTH-WINTER':{
+  name:'Природа розуму як вона є',
+  tagline:'Рігпа — вже тут, завжди',
+  trad:'Тибетська Ньїнгма · Падмасамбгава · VIII ст.',
+  duration:'Без обмежень',
+  posture:'Будь-яка зручна поза',
+  bodyNote:'Дихання дуже тонке і природне, тіло майже забуте',
+  history:'Дзогчен (རྫོགས་ཆེན) — Падмасамбгава (VIII ст.) передав 25 учням. Школа Ньїнгма. Намхай Норбу (1938–2018) відкрив для Заходу. fMRI: знижує Default Mode Network.',
+  instruction:'Не намагайтесь медитувати. Не намагайтесь зупинити думки. Дозвольте усвідомленості бути тим що вона є — відкритою, яскравою, порожньою. Думки виникають у ній як хвилі в океані — вони і є рухом усвідомленості, а не перешкодою. Якщо «загубились» у думці — хто це зауважив? Залишайтесь у тому хто зауважив.',
+  mantra:'Рігпа — відкрита усвідомленість, вже тут',
+  closes:'Немає завершення — ця практика продовжується у кожній наступній дії і думці протягом дня.',
+  variants:['Трекчо: \'прорізання\' у спокої','Тогал: праця зі світловими феноменами','Бардо-практики: підготовка до смерті','Рігпа у щоденному житті між думками']
+},
+'WE-EAST-SPRING':{
+  name:'Єдиний подих кола',
+  tagline:'Разом вдихаємо новий початок',
+  trad:'Бгакті-йога · Кундаліні Йога · Даосизм',
+  duration:'20 хвилин',
+  posture:'Коло, сидячи обличчям до центру',
+  bodyNote:'Слухайте дихання сусідів, дозвольте ритму стати спільним',
+  history:'Групова Пранаяма — традиція хариддасів і Кіртану Чайтан\'ї (XV ст., Бенгалія). Кундаліні Йога Ягі Бхаджана (1969): \'Breath of Fire\' у групах. Feldman (2011): синхронізація дихання підвищує ЕЕГ-когерентність.',
+  instruction:'Коло сідає і синхронізує дихання — спочатку кожен дихає сам, потім ведучий задає ритм: вдих на 4, пауза на 2, видих на 6. Поступово група знаходить спільний ритм без примусу. Відчуйте як ваше дихання стає частиною більшого дихання кола. Весняна енергія підіймає всіх разом.',
+  mantra:'Разом вдихаємо — разом відпускаємо',
+  closes:'Завершіть у тиші, тримаючи руки сусідів і відчуваючи спільний пульс.',
+  variants:['Ба Дуань Цзінь групою рано-вранці','Бгастріка у колі як активатор','Тиха синхронна пранаяма','Кіртан: перехід від дихання до звуку']
+},
+'WE-EAST-SUMMER':{
+  name:'Ріка мантр',
+  tagline:'Голос стає одним голосом',
+  trad:'Бгакті Веданта · Вайшнавізм · XV ст.',
+  duration:'30 хвилин',
+  posture:'Коло або напівколо, сидячи',
+  bodyNote:'Грудна клітка відкрита, звук йде з живота, не з горла',
+  history:'Кіртан (কীর্তন) — Санкіртана Чайтан\'ї (XV ст., Бенгалія), Вайшнавізм. На Захід — Свамі Прабгупада (ІСКОН, 1966). Kim et al. (2017): активує вагусний нерв, знижує кортизол.',
+  instruction:'Ведучий починає простий мелодійний рядок — «Харе Ом» або «Ом Шанті». Кожен підхоплює у своєму темпі. Поступово голоси зливаються у єдиний потік. Не намагайтесь співати красиво — дозвольте голосу бути вільним. У літньому розкритті дозвольте себе розчинитись у спільному звуці.',
+  mantra:'Харе Ом — або «Ом» разом',
+  closes:'Поступово дозвольте співу стихнути у тишу і посидьте в ній кілька хвилин разом.',
+  variants:['Бгаджан: devotional songs','Kirtan Kriya: LSMD-мантра з жестами','Звукова медитація: одна нота до резонансу','Зікр: ісламська паралель']
+},
+'WE-EAST-AUTUMN':{
+  name:'Спільна тиша дихання',
+  tagline:'Мовчимо разом, дихаємо разом',
+  trad:'Квакери · Дзен · 1647–VII ст.',
+  duration:'25 хвилин',
+  posture:'Коло, спини прямі',
+  bodyNote:'Природне дихання, усвідомлення присутності інших без контакту очима',
+  history:'Квакерська мовчазна медитація — з 1647 р. (Джордж Фокс). Дзен-групова Сесшін — з VI ст. Feldman (2011): спільне дихання синхронізує серцеві ритми учасників.',
+  instruction:'Група сідає разом і дихає — без слів, без ведення. Кожен спостерігає власне дихання, але усвідомлює присутність інших. Осіннє зібрання: принесіть увагу до того що завершується — у собі, у стосунках, у проекті. Дозвольте тиші групи стати контейнером для цього відпускання.',
+  mantra:'Тиша між нами — теж розмова',
+  closes:'Перед завершенням кожен може назвати одне слово — те що відпускає. Або залишитись у мовчанні.',
+  variants:['Квакерське зібрання: слово коли рухає Дух','Дзен Сесшін: кінхін між сесіями','Гоєнка Noble Silence (10-денний ретрит)','Теравадинська спільна рецитація']
+},
+'WE-EAST-WINTER':{
+  name:'Групова Пранаяма — зимовий Цігун',
+  tagline:'Разом зберігаємо Ці у зимі',
+  trad:'Даосизм · Цігун · Нейдан',
+  duration:'20 хв',
+  posture:'Стоячи або сидячи у колі',
+  bodyNote:'Дихання глибоке і повільне, руки на Нижньому Дантяні',
+  history:'Зимова Ці-гун практика пов\'язана з Дунчжі (冬至 — Зимовим Сонцестоянням) і зберіганням Юань-Ці (первинної енергії). У традиційній китайській медицині зима — час нирок і Цзін (есенції). Ван Цзяй (XIV ст.) у Хуайнань-цзи описує зимові дихальні практики для збереження Шень (духу). Групова форма підсилює індивідуальне поле.',
+  instruction:'Стоячи або сидячи у колі. Руки на Нижньому Дантяні (3 см нижче пупа). Повільне дихання: вдих 6 рахунків, видих 9 рахунків. Уявляйте тепле золоте Ці що накопичується у Дантяні і поширюється по тілу. Зима — час зберігати а не витрачати.',
+  mantra:'Ці повертається до витоку',
+  closes:'Завершіть притиснувши долоні до Нижнього Дантяню і відчуваючи його тепло.',
+  variants:['Нейдан: внутрішня алхімія у зимовому полі','Ба Дуань Цзінь: зимова форма (м\'яка)','Цзо-Ван після Цігун: трансформація у спокій','Шість Цілющих Звуків взимку: He і Chui']
+},
+'WE-SOUTH-SPRING':{
+  name:'Кіртана-Нрітья — священний танець',
+  tagline:'Тіло стає живою мантрою',
+  trad:'Бгакті-Йога · Одіссі · Бгаратанат\'ям',
+  duration:'30–45 хв',
+  posture:'Стоячи або у русі',
+  bodyNote:'Руки, погляд і дихання синхронні з ритмом мантри',
+  history:'Натья (नाट्य — священний танець) описаний у Натья-Шастрі (Бгарата Муні, II ст. до н.е.) як «п\'ята Веда». Традиції: Бгаратанатьям (Тамілнад, III ст.), Одіссі (Одіша, VII ст.), Катхак (Північ). Танець є формою Бгакті де тіло стає живою молитвою. У традиції Чайтан\'ї (XV ст.) Кіртан-Нрітья є вищою формою Бгакті — «розплавлення серця через рух».',
+  instruction:'Почніть з мантри — Харе Крішна або Ом Намах Шивая. Дозвольте ритму мантри перейти у рух рук, погляду, тіла. Не хореографія — відданість у русі. Поступово межа між тим хто танцює і мантрою розчиняється.',
+  mantra:'Харе Крішна Харе Крішна — Крішна Крішна Харе Харе',
+  closes:'Завершіть нерухомо з руками на серці — несіть тепло що залишилось від танцю.',
+  variants:['Бгаратанатьям: класичний танець-храм (соло)','Одіссі: ліричний стиль присвячений Джаганнатху','Катхак: північний стиль з обертаннями','Кіртан-Нрітья у колі: груповий рух і спів']
+},
+'WE-SOUTH-SUMMER':{
+  name:'Розплавлення у звуку',
+  tagline:'Голоси зливаються в один',
+  trad:'hindu',
+  duration:'35 хв',
+  posture:'Стоячи або вільний рух',
+  bodyNote:'Дихання злите зі звуком, тіло резонує',
+  history:'Пік Кіртану відповідає стану Према-Бгакті — вищій відданості у Вайшнавізмі. Рупа Госвамі (XVI ст., учень Чайтан\'ї) описав вісім ступенів Бгакті де злиття є сьомим. У традиції Шакта-сампрадаї Деві-Кіртан описується як стан де виконавець зникає і лишається лише звук.',
+  instruction:'Продовжуйте Кіртан до повного забуття. Дозвольте голосу стати автономним — він співає сам. Танцюйте або стійте — дозвольте звуку захопити тіло повністю.',
+  mantra:'Джай Джай Шіва Шамбхо',
+  closes:'Зупиніться всі разом. Постойте у вібрації після піку.',
+  variants:['Мадхурья-Бгакті: Кіртан Кришна-традиції','Шакта-Кіртан: пісні Деві','Нама-Санкіртана Гауракішори','Абганг: маратхська традиція (Туканрам)']
+},
+'WE-SOUTH-AUTUMN':{
+  name:'Приймаємо разом',
+  tagline:'Чужий біль стає нашим',
+  trad:'Тибетська · Lojong · Пема Чодрон · 1996',
+  duration:'25 хвилин',
+  posture:'Коло, руки на колінах',
+  bodyNote:'Уявляйте серце кола у фізичному центрі простору між вами',
+  history:'Колективний Tonglen — Lojong-традиція де монахи практикують разом. Пема Чодрон (1996): \'When Things Fall Apart\'. ACT і MBCT використовують схожі протоколи.',
+  instruction:'Ведучий називає джерело колективного болю — конкретного або архетипного. Вся група на вдиху уявляє цей біль як темну хмару що входить у серце групи — не у кожного окремо, а у спільне серце кола. На видиху — з центру кола назовні розходиться тепло і полегшення. Tonglen як колективна практика.',
+  mantra:'Разом несемо — разом відпускаємо',
+  closes:'Завершіть хвилиною мовчання для тих хто страждає, потім торкніться долонями підлоги.',
+  variants:['Tonglen для конкретної людини (все коло)','Tonglen для колективної травми','Карана-Медитація через Метта-формули','Групова практика P\'eng (даоський аналог)']
+},
+'WE-SOUTH-WINTER':{
+  name:'Групова Дзадзен — Мауна Сангхи',
+  tagline:'Тиша Сангхи глибша за одиноку',
+  trad:'Сото Дзен · Буддизм · Сангха',
+  duration:'30 хв',
+  posture:'Коло або ряди, обличчям до стіни',
+  bodyNote:'Спини прямі, очі напівзакриті, повна нерухомість',
+  history:'Спільна медитація у Сангсі (общині) є одним з Трьох Скарбів Буддизму: Будда, Дгарма, Сангха. У Дзен-традиції групова тиша Сесшіну є не просто паралельними індивідуальними практиками — вона має своє особливе колективне поле. Доген Зенджі (XIII ст.) вчив що практика у Сангсі незрівнянна з самотньою.',
+  instruction:'Група сідає у Дзадзені разом. Немає ведення, немає слів. Відчуйте як тиша кожного утримує тишу всіх. У зимовій темряві групова Мауна особливо глибока. Через 25 хвилин — Кінхін: синхронна ходьба по колу. Повернення до сидіння.',
+  mantra:'Наша тиша — одна тиша',
+  closes:'Вклін один одному після завершення — визнання Будда-природи кожного присутнього.',
+  variants:['Сесшін: 7-денний ретрит (12+ год/день)','Кінхін між сесіями Дзадзену','Сату: медитація у спільній праці','Докусан: приватна зустріч з вчителем']
+},
+'WE-WEST-SPRING':{
+  name:'Колективний відпочинок',
+  tagline:'Разом відпускаємо тіла у землю',
+  trad:'Bihar School Йоги · Свамі Сатьянанда · 1970-і',
+  duration:'35 хвилин',
+  posture:'Всі лежать у шавасані',
+  bodyNote:'Кімната тепла, покривала якщо потрібно, повна нерухомість',
+  history:'Групова Йога-Нідра — Bihar School Сатьянанди (1970-і). iRest у US Army Wellness Centers і Veterans Administration hospitals. Масові практики на 5000+ учасників у Рішікеші.',
+  instruction:'Ведучий веде групу через тіло: «Розслабте стопи... гомілки... стегна...» аж до голови. Санкальпу для групи визначають разом заздалегідь — наприклад «Ми відновлені і єдині». Повторіть її тричі на початку і тричі наприкінці. Весняний колективний відпочинок готує до нового починання.',
+  mantra:'Групова санкальпа — тричі разом',
+  closes:'Ведучий м\'яко кличе всіх назад: «Поворухніть пальцями, потягніться, сядьте у своєму темпі».',
+  variants:['iRest-груповий для ПТСР і тривоги','Звукова ванна під час групової Нідри','Нідра на природі (під деревами)','Нідра перед творчою роботою']
+},
+'WE-WEST-SUMMER':{
+  name:'Коло любові',
+  tagline:'Серце розширюється на всіх',
+  trad:'Тхеравада · Тибет · Sharon Salzberg · 1995',
+  duration:'25 хвилин',
+  posture:'Коло, долоні на серці',
+  bodyNote:'Груди відкриті, плечі опущені, легка усмішка на обличчі',
+  history:'Метта Бгавана у групі — Тхеравада і Тибет. Sharon Salzberg \'Lovingkindness\' (1995). Fredrickson (UNC): 6-тижнева LKM підвищує ліво-лобову асиметрію EEG.',
+  instruction:'Почніть надсилати любов собі: «Нехай я буду щасливим, здоровим, у безпеці». Після 5 хвилин — надсилайте любов людині праворуч від вас. Потім — всьому колу. Потім — всім людям за межами кімнати. У літньому розкритті ваше серце не має меж. Відчуйте як тепло циркулює по колу.',
+  mantra:'Нехай всі будуть щасливими і у мирі',
+  closes:'Покладіть руки на долоні сусідів і відправте фінальний імпульс тепла по всьому колу.',
+  variants:['Walking Metta: доброта кожному зустрічному','Loving-Kindness 5-кіл розширення','Tonglen у колі як \'темна версія\' Metta','Self-compassion (Neff): фокус на собі']
+},
+'WE-WEST-AUTUMN':{
+  name:'Спільне поле співчуття',
+  tagline:'Присутність свідків зцілює',
+  trad:'buddhist',
+  duration:'35 хв',
+  posture:'Коло, зручні пози',
+  bodyNote:'Серце відкрите, хребет стійкий — рівновага як основа',
+  history:'Карана-Бгавана у групі — традиція Сангхи від перших часів Тхеравади. Тіт Нат Хан (Plum Village, 1982) відновив традицію групового споглядання болю як Engaged Buddhism. Вісуддгімагга описує Карана як стан де серце розкривається без злиття з болем.',
+  instruction:'Один учасник мовчки утримує джерело болю. Вся група направляє Карана-побажання: \'Нехай твоє страждання зменшиться\'. Свідки дихають разом — присутність є підношенням.',
+  mantra:'Нехай всі істоти будуть вільні від страждання',
+  closes:'Хвилина спільної Упеккха (рівноваги) — присутність без злиття.',
+  variants:['Чотири Брахма-вігари послідовно','Тонглен у колі (тибетська версія)','Engaged Buddhism (Тіт Нат Хан)','Дзен Кіссо: турбота про хворих']
+},
+'WE-WEST-WINTER':{
+  name:'Мауна — обітниця мовчання',
+  tagline:'Спільна тиша без слів',
+  trad:'Йога · Адвайта · Аштанга-Йога',
+  duration:'30 хв — кілька годин',
+  posture:'Коло або спільний простір',
+  bodyNote:'Тіло розслаблене, рот закритий, увага розширена',
+  history:'Мауна (मौन — \'мовчання\') — дев\'ята Яма або Нійяма у деяких традиціях Йоги. Рамана Махарші практикував Мауну понад 17 років (1897–1916) і вважав її найвищою формою навчання. Традиція Мауна-Дікша: передача мудрості через мовчання. Вчителі: Рамана, Нісаргадатта. У Буддизмі: Арья-Мауна (Благородне Мовчання) — тиша у Сангсі.',
+  instruction:'Група приймає обітницю мовчання разом. Немає ведення, слів, знаків. Кожен сидить або рухається у власному просторі але у присутності інших. Мауна не є ізоляцією — вона є найглибшою формою Сангхи: бути разом без необхідності щось доводити через слово.',
+  mantra:'— (тиша є мантрою)',
+  closes:'Коли Мауна завершується — перше слово несе в собі вагу тиші що передувала.',
+  variants:['Маун-Враta: обітниця мовчання на день','Арья-Мауна: Благородне Мовчання у Буддизмі','Мауна-Дікша: передача через мовчання','Сесшін: 7-денне мовчання у Дзен']
+},
+'WE-NORTH-SPRING':{
+  name:'Ранкові вісім скарбів',
+  tagline:'Тіло як один організм рухається',
+  trad:'Даосизм · Цігун · Сун-династія · 960–1279',
+  duration:'25 хвилин',
+  posture:'Стоячи у шерензі або колі',
+  bodyNote:'Дихання синхронне з рухом, коліна злегка зігнуті',
+  history:'Ба Дуань Цзінь (八段錦) — перша згадка Хун Май (XIII ст.). Канонізована держспорткомітетом КНР у 2003. WHO 2019: Qigong у традиційній медицині. Lauche (2013): знижує тиск.',
+  instruction:'Ба Дуань Цзінь — вісім рухів Ці-гун виконуються разом. Ведучий рахує і показує. Перший рух: повільно піднімайте руки з боків вгору (вдих) — долоні з\'єднались над головою — натискайте вгору — опускайте (видих). 8 повторень. Весняна група Ці-гун активує спільне поле Ці.',
+  mantra:'Один рух, одне тіло, одна Ці',
+  closes:'Завершіть у Вуцзі — нерухомій позі стовпа — і відчуйте спільне поле що лишається.',
+  variants:['Повна Ба Дуань Цзінь (всі 8 рухів)','У Цінь Сі (П\'ять тварин)','Тайцзи Чуань як рухова медитація','Вілоу Цігун: плавний варіант']
+},
+'WE-NORTH-SUMMER':{
+  name:'Сесшін — сидимо разом',
+  tagline:'Тиша групи глибша за одиноку',
+  trad:'Дзен · Rinzai · Soto · XIII ст.',
+  duration:'40 хвилин',
+  posture:'Обличчям до стіни або до центру',
+  bodyNote:'Тримайте спину рівно навіть коли стає важко — підтримка кола допомагає',
+  history:'Сесшін (接心, \'торкатись розуму\') — Rinzai з Хакуїна (1686–1769), Soto з Догена (XIII ст.). San Francisco Zen Center, Dharma Drum Mountain. Масуда (2018): знижує DMN.',
+  instruction:'Група сидить у дзадзені разом. Немає ведення — є лише спільна нерухомість. Через 25 хвилин — кінхін: повільна ходьба по колу, крок за кроком синхронно. Повернення до сидячої практики. Влітку присутність кожного підтримує присутність всіх.',
+  mantra:'Наша тиша — одна тиша',
+  closes:'Завершіть вклоном один одному — визнання Будда-природи кожного присутнього.',
+  variants:['Кінхін між сесіями','Докусан: зустріч з вчителем','Нойо Дзен: з поясненнями','Неформальний Сесшін вдома']
+},
+'WE-NORTH-AUTUMN':{
+  name:'Цзі-Цзу — шанування предків',
+  tagline:'Ланцюг часу проходить крізь нас',
+  trad:'Класичний Даосизм · Конфуціанство · Цінміне',
+  duration:'30–45 хв',
+  posture:'Сидячи або на колінах, обличчям на північ',
+  bodyNote:'Хребет прямий, руки складені перед грудьми або на колінах',
+  history:'Пошанування предків (祭祖 — Цзі-Цзу) — одна з найдавніших даоських і конфуціанських практик. Від ритуалів Шан-династії (1600–1046 до н.е.) де кістки оракула використовувались для спілкування з предками. Свято Цінміне (清明 — «Ясне і Чисте», III місяць) є основним часом шанування. Схожа практика у Буддизмі: Уллам-бана (Обон у Японії, Vu Lan у В\'єтнамі).',
+  instruction:'Відчуйте за спиною лінію предків — батьки, дідусі, прадіди — аж до витоку. Уявляйте їхню підтримку як тепло між лопатками. Надсилайте вдячність назад у часі: «Ваше існування зробило моє існування можливим». Осінь — час збору врожаю і вдячності.',
+  mantra:'Дякую вам за ваше існування',
+  closes:'Відчуйте себе не самотнім а ланкою у ланцюзі — отримали і передаєте далі.',
+  variants:['Цінміне: традиційне шанування могил і підношення','Обон (Японія): буддійський фестиваль предків','Генеалогічна медитація: образи предків у лінії','Системні Розстановки (Гелінгер): поле предків']
+},
+'WE-NORTH-WINTER':{
+  name:'Земляна церемонія',
+  tagline:'Повертаємось у велике мовчання',
+  trad:'Даосизм · Дунчжі · ритуали Землі',
+  duration:'45 хвилин',
+  posture:'На підлозі, торкаючись землі',
+  bodyNote:'Максимальний контакт з підлогою, повна нерухомість',
+  history:'Дунчжі (冬至 — Зимове Сонцестояння) — найвищий ритуальний день даоського календаря. Паралелі: Йоль (скандинавська), Saturnalia (римська), Sol Invictus, Різдво.',
+  instruction:'Група сідає або лягає на підлогу — по можливості на голу землю або на мінімальний килимок. Долоні торкаються підлоги. Повільне дихання. Уявляйте що ви — частина зимової землі яка спить і відновлюється. Немає мети, немає руху, немає звуку. Тільки земля, тіло і тиша.',
+  mantra:'Земля тримає нас — ми є земля',
+  closes:'Повільно піднімайтесь, несучи у собі заземленість і зимовий спокій.',
+  variants:['Церемонія Дунчжі','Forest Bathing + земляна медитація','Земляна Йога-Нідра','Шаманський барабан і земляне злиття']
+},
+'YOU-EAST-SPRING':{
+  name:'Серце відкривається до тебе',
+  tagline:'Перший крок до іншого',
+  trad:'Тхеравада · Brahma-viharas · V ст.',
+  duration:'20 хвилин',
+  posture:'Сидячи, долоні на серці',
+  bodyNote:'Тепло у грудях як фізичне відчуття — не уявне а реальне',
+  history:'Метта Бгавана — Каранія Метта Сутта (Sn 1.8), Вісуддгімагга (Буддагоша, V ст.). Fredrickson \'Positivity Resonance\' (2013): 6-тижнева LKM підвищує ресурси і позитивні емоції.',
+  instruction:'Уявіть конкретну людину яку вам легко любити. Відчуйте тепло в серці при думці про неї. Тепер надсилайте їй фрази: «Нехай ти будеш щасливим. Нехай ти будеш здоровим. Нехай ти будеш у безпеці. Нехай ти будеш у мирі». Весна відкриває серце — дозвольте першому кроку назустріч бути легким.',
+  mantra:'Нехай ти будеш щасливим і у мирі',
+  closes:'Відчуйте як тепло що ви надіслали повертається до вас — любов що дається примножується.',
+  variants:['Walking Metta у місті','5-кіл розширення (Salzberg)','Self-compassion: починайте з себе','Tonglen як \'темна версія\' Metta']
+},
+'YOU-EAST-SUMMER':{
+  name:'Доброта на ходу',
+  tagline:'Кожна зустріч — практика',
+  trad:'Тхеравада · Масаті · Hofmann · 2011',
+  duration:'30 хвилин ходьби',
+  posture:'Ходьба у звичайному темпі',
+  bodyNote:'Серце відкрите навіть коли тіло рухається',
+  history:'Walking Metta — Luang Por Tien (Таїланд, XX ст.). Hofmann et al. (2011): 8-тижнева LKM знижує депресію. Killingsworth & Gilbert (Science, 2010): мандрівний розум = нещастя.',
+  instruction:'Вийдіть назовні. Для кожної людини яку ви бачите — незнайомця чи знайомого — мовчки надсилайте побажання: «Нехай ти будеш щасливим». Не потрібно дивитись їм в очі або посміхатись — це внутрішня практика. Відчуйте як ваше серце поступово пом\'якшується до всіх людей навколо.',
+  mantra:'Нехай ти — для кожного хто зустрічається',
+  closes:'Повернувшись додому, надішліть побажання щастя всьому місту або всій країні.',
+  variants:['Метта на транспорті','Метта для важкої людини','Just Like Me: \'як і я, хоче щастя\'','Secular Metta у MBSR']
+},
+'YOU-EAST-AUTUMN':{
+  name:'Серце з тим хто страждає',
+  tagline:'Бачу твій біль і я тут',
+  trad:'Тхеравада · CFT · Self-compassion · 2003',
+  duration:'20 хвилин',
+  posture:'Сидячи, спокійно',
+  bodyNote:'Серце відкрите але центр стабільний, дихання рівне',
+  history:'Каруна (करुण) — друга з Brahma-viharas. Neff (2003): Self-compassion. Gilbert (2014): Compassion-Focused Therapy (CFT). Zenger et al. (2011): compassion без fatigue.',
+  instruction:'Уявіть конкретну людину яка зараз страждає. Дозвольте серцю відкритись до її болю — не рятуючи, не вирішуючи, просто відчуваючи. Надсилайте: «Нехай твій біль зменшиться. Нехай ти знайдеш полегшення. Я бачу тебе». Карана відрізняється від жалю: ви не тонете у болі іншого — ви просто присутні.',
+  mantra:'Бачу тебе, серце з тобою',
+  closes:'Відчуйте рівновагу після практики — не відстороненість, а стабільну присутність.',
+  variants:['CFT (Гілберта)','Tonglen для конкретної людини','Self-compassion Break (Neff)','Karuна у парі: свідчення']
+},
+'YOU-EAST-WINTER':{
+  name:'Дгарма-Шравана — слухання Сутр',
+  tagline:'Зустріч з Іншим через Дгарму',
+  trad:'Тхеравада · Буддизм · Сангха',
+  duration:'30 хв',
+  posture:'Сидячи, обличчям до вчителя або тексту',
+  bodyNote:'Розум тихий і рецептивний, тіло нерухоме',
+  history:'Дгарма-Шравана (धर्मश्रवण — \'слухання Вчення\') — один з десяти видів парамітного вчинку у Буддизмі. У Тхеравада-Вінаї слухання Сутр від монахів є обов\'язковою практикою мирян. Тіт Нат Хан відродив практику у форматі Dharma talks у спільноті Plum Village (1966) де слухання саме по собі є медитацією.',
+  instruction:'Сядьте перед вчителем або відкрийте Сутру. Читайте або слухайте повільно — одне речення за раз. Зупиняйтесь де щось торкнулось. Закрийте текст і сидіть з цим — дозвольте Дгармі говорити як від живої особи, як від присутності Будди. Зустріч через текст є зустріччю з Іншим.',
+  mantra:'Садху — садху — садху (воістину — воістину — воістину)',
+  closes:'Запишіть одне речення яке з\'явилось у вас як відповідь на почуте.',
+  variants:['Традиційне слухання Дгарми від монаха','Сутра-читання як Дгарма-Шравана','Мандукья Упанішада: слухання з Ом','Паренас: слухання японських буддійських Сутр']
+},
+'YOU-SOUTH-SPRING':{
+  name:'Вогонь прийняття іншого',
+  tagline:'Твій тягар стає моїм',
+  trad:'Тибетська · Lojong · Атіша · XI ст.',
+  duration:'20 хвилин',
+  posture:'Сидячи, з образом людини у серці',
+  bodyNote:'Вдих в область серця, видих через долоні назовні',
+  history:'Tonglen для конкретної людини — стандартна Lojong-форма. Атіша вчив що це антидот уникання важких учнів. Далай-лама XIV практикує Tonglen двічі на день.',
+  instruction:'Уявіть конкретну людину яка зараз страждає. На вдиху — прийміть її страждання у своє серце як темне диміло. Не відштовхуйте, не рятуйте — просто прийміть. На видиху — відправляйте їй все що їй зараз потрібно: силу, спокій, ясність, радість. Весняний вогонь трансформує прийняте у дар.',
+  mantra:'Беру твій біль, даю тобі світло',
+  closes:'Завершіть відчуттям що ваше серце стало більшим від цієї практики, а не меншим.',
+  variants:['Tonglen для ворога','Tonglen для мертвих','Tonglen для Землі як живої істоти','Self-compassion Tong-Len']
+},
+'YOU-SOUTH-SUMMER':{
+  name:'Самапатті — злиття у присутності',
+  tagline:'Розум розчиняється у присутності',
+  trad:'Раджа-Йога · Патанджалі · Самкх\'я',
+  duration:'30 хв',
+  posture:'Сидячи навпроти партнера або у колі',
+  bodyNote:'Погляд м\'який, дихання синхронне, межі тіла розм\'якшуються',
+  history:'Самапатті (संपत्ति — \'злиття, трансформація свідомості\') — термін Патанджалі з Йога-Сутр (I-II ст. до н.е.). Описує стан де свідомість (читта) набуває форми об\'єкта медитації. Рівні: Вітарка-самапатті (груба), Вічара-самапатті (тонка), Ананда (блаженство), Асміта (відчуття чистого я). У Тантрі — основа спільних медитацій Шіва-Шакті.',
+  instruction:'Сядьте навпроти партнера. Дозвольте своїй свідомості поступово приймати форму присутності іншого — не думаючи про нього а безпосередньо відчуваючи. Межа між \'моєю\' і \'твоєю\' усвідомленістю поступово розм\'якшується. Самапатті не зливає его — вона відкриває простір де обоє присутні.',
+  mantra:'Ахам Брахмасмі — я є Брахман',
+  closes:'Повільно поверніться у відчуття власного тіла і просторової окремішності.',
+  variants:['Вітарка-Самапатті: медитація на грубий об\'єкт','Вічара-Самапатті: медитація на тонкий об\'єкт','Ананда-Самапатті: медитація на блаженство','Тантрична Самапатті: Шіва-Шакті єдність']
+},
+'YOU-SOUTH-AUTUMN':{
+  name:'Сонце і ворог',
+  tagline:'Трансформую через серце',
+  trad:'Тибетська · Lojong · Чекава · XII ст.',
+  duration:'25 хвилин',
+  posture:'Сидячи стійко',
+  bodyNote:'Тримайте твердість хребта поки серце пом\'якшується',
+  history:'Tonglen для ворога — найвища форма Lojong. Чекава (XII ст.): \'Направляй перемогу іншому\'. Традиція Тшуваг (повернення) перед Рош га-Шана: єврейська паралель.',
+  instruction:'Уявіть людину яка завдала вам болю. На вдиху — прийміть їхній власний біль (адже люди ранять з болю) у своє серце. На видиху — надсилайте їм щастя і свободу від їхнього болю. Це не виправдовує що вони зробили — це звільняє вас від ланцюга взаємного болю. Осінь трансформує старі рахунки.',
+  mantra:'Ти теж хочеш бути щасливим — нехай так буде',
+  closes:'Відчуйте невелике але реальне полегшення — це і є перший крок до свободи.',
+  variants:['Just Like Me: \'як і я, хоче щастя\'','Ho\'oponopono: 4 фрази','Тшува: єврейська практика','Виборчий Tonglen: поступово складніші']
+},
+'YOU-SOUTH-WINTER':{
+  name:'Пратіпакша Бгавана — замінити отруту',
+  tagline:'Культивую протилежне отруті',
+  trad:'Раджа-Йога · Патанджалі · Йога-Сутри',
+  duration:'20 хв',
+  posture:'Сидячи стійко',
+  bodyNote:'Увага на внутрішньому стані, тіло стабільне',
+  history:'Пратіпакша Бгавана (प्रतिपक्ष भावना — \'культивування протилежного\') — метод Патанджалі (Йога-Сутри 2.33-2.34) для роботи з деструктивними думками. \'Коли турбують негативні думки — культивуй протилежні.\' Пряма антитеза методу придушення: не заперечення негативного, а активне вирощування позитивного. В Тхеравада-Буддизмі паралель — Патікулпмансанна.',
+  instruction:'Принесіть до уваги деструктивну думку чи почуття щодо людини або ситуації. Не придушуйте. Замість цього активно культивуйте протилежне: ворожість → Метта, заздрість → Мудіта (радість), страх → Маїтрі (доброзичливість). Зимова глибина допомагає трансформувати найстаріше.',
+  mantra:'Замість отрути — медицина',
+  closes:'Помітьте не зникнення негативного, а зростання позитивного — це і є Пратіпакша.',
+  variants:['Йога-Сутри 2.33: текст як об\'єкт медитації','Метта як Пратіпакша для ворожості','Мудіта як Пратіпакша для заздрості','Сатья-аналіз: чи відповідає думка реальності?']
+},
+'YOU-WEST-SPRING':{
+  name:'Шравана — мистецтво слухання',
+  tagline:'Слухати як одержати мудрість',
+  trad:'Адвайта Веданта · Шрутіпарампара',
+  duration:'30 хв',
+  posture:'Сидячи обличчям до вчителя або тексту',
+  bodyNote:'Вуха відкриті, розум тихий, тіло нерухоме',
+  history:'Шравана (श्रवण — \'слухання\') — перший з трьох кроків пізнання в Адвайта Веданті: Шравана → Манана (роздумування) → Нідідхьясана (медитація). Описана у Брихадараньяка Упанішаді (700 до н.е.): Ягняволк\'я навчає дружину Майтреї. Традиція усної передачі (Шруті) передбачає що Веди пізнаються лише через правильне слухання від вчителя.',
+  instruction:'Сядьте перед вчителем або сакральним текстом. Повністю очистіть розум від власних думок і концепцій. Слухайте не просто слова а смисл що за словами. Не аналізуйте під час слухання — просто приймайте. Шравана вимагає повної рецептивності: розум як порожня чаша.',
+  mantra:'Тат твам асі — ти є те',
+  closes:'Після слухання — мовчазне Манана: дозвольте почутому осісти і розкритись у тиші.',
+  variants:['Шравана Сутр від вчителя (традиційна форма)','Читання Упанішад як Шравана самостійно','Шравана→Манана→Нідідхьясана: повний цикл','Слухання природи як Шравана (даоська паралель)']
+},
+'YOU-WEST-SUMMER':{
+  name:'Вічарана — літнє самодослідження',
+  tagline:'Хто відчуває у цих стосунках?',
+  trad:'Адвайта Веданта · Рамана Махарші',
+  duration:'25 хв',
+  posture:'Сидячи стійко після взаємодії',
+  bodyNote:'Тіло нерухоме, увага спрямована всередину',
+  history:'Вічара (विचार — \'розпитування, дослідження\') — ширший термін ніж Атма-Вічара у Рамани. У традиції Бгакті-йоги Вічарана є формою відданого самоаналізу. У Йога-Сутрах Патанджалі (II ст. до н.е.) розрізняються чотири форми Самапатті де Вічара є більш тонким рівнем ніж Вітарка.',
+  instruction:'Після взаємодії з людиною — сядьте. Запитайте: що я насправді переживав у тій взаємодії? Де в тілі це живе? Хто переживає цю реакцію? Стежте за відповідями не як аналітик а як свідок. Вічарана у стосунках розкриває проекції і умовні патерни.',
+  mantra:'Ким я є у присутності іншого?',
+  closes:'Залишіть питання відкритим і понесіть його у наступну взаємодію як живе усвідомлення.',
+  variants:['Вічара після конфлікту (причина реакції)','Вічарана у традиції Атма-Вічари Рамани','Самкх\'я: розрізнення Пуруші і Пракріті','Вірагья-Вічара: дослідження відстороненості']
+},
+'YOU-WEST-AUTUMN':{
+  name:'Каруна для важкого — стійкість',
+  tagline:'Співчуття без розчинення',
+  trad:'Тхеравада · Тибетська · Брахма-Вігара',
+  duration:'25 хв',
+  posture:'Сидячи, хребет прямий',
+  bodyNote:'Центр стабільний, серце відкрите — обидва разом',
+  history:'Каруна (करुण — \'співчуття\') — друга з чотирьох Брахма-Вігара (Metta, Karuna, Mudita, Upekkha). Вісуддгімагга Буддагоши (V ст.) описує \'Karuна для важкої людини\' як просунутий рівень практики. Тибетська традиція Бодгічітти (VIII ст.) поєднує Каруну з рівновагою (Upeksha) щоб уникнути \'співчутливої втоми\'.',
+  instruction:'Принесіть до уваги людину стосунки з якою складні — де є образа чи відчуження. Спочатку стабілізуйте власне відчуття центру. Потім відкрийте серце: ця людина теж страждає, теж хоче бути щасливою. Надсилайте Каруна-фрази тримаючи рівновагу — не злиття з болем а стабільна присутність.',
+  mantra:'Нехай твоє страждання зменшиться',
+  closes:'Завершіть Upeksha-фразою: \'Ти є власником своїх дій і їхніх наслідків\'.',
+  variants:['Karuна для особи що завдала болю','Karuna + Upeksha: рівновага і співчуття разом','Tonglen як більш активна форма Karuna','Mudita: радість від щастя іншого']
+},
+'YOU-WEST-WINTER':{
+  name:'Упекша — рівновага свідка',
+  tagline:'Присутній але не захоплений',
+  trad:'Тхеравада · Буддизм · Брахма-Вігара',
+  duration:'20 хв',
+  posture:'Сидячи або лежачи у теплі',
+  bodyNote:'Тіло стабільне і вкорінене, серце нейтрально відкрите',
+  history:'Upeksha (उपेक्षा — \'рівноважність, рівновага\') — четверта і найвища з Брахма-Вігара. Описана у Вісуддгімагзі як \'стояти посередині\' без прихильності чи відрази. Відрізняється від байдужості тим що є активною присутністю. У Бгагавад-Ґіті (II ст. до н.е.) рівновага (Самтва) описується як вища чеснота воїна-йога.',
+  instruction:'Принесіть до уваги складні стосунки. Не намагайтесь вирішити чи змінити. Просто присутні — як небо що не прагне змінити хмари. Повторюйте: \'Я бажаю тобі щастя але не можу прожити за тебе твій шлях. Ти є власником своїх дій.\' Відчуйте різницю між відстороненістю і рівновагою.',
+  mantra:'Як є — так є. Я тут.',
+  closes:'Ця практика не відмова від стосунків — вона є основою стійкого і щирого зв\'язку.',
+  variants:['Upeksha як четверта Брахма-Вігара','Самтва (Рівновага) у Бгагавад-Ґіті','Татрамадджгаттата: рівноважність у Пали','Вірагья: ненасильницьке відсторонення']
+},
+'YOU-NORTH-SPRING':{
+  name:'Коан про іншого',
+  tagline:'Який твій справжній образ?',
+  trad:'Rinzai Дзен · Хакуїн Екаку · 1686',
+  duration:'Весь день',
+  posture:'Будь-яка, практика безперервна',
+  bodyNote:'Щоразу як ви реагуєте — пауза, і питання',
+  history:'Koan (公案) виник у Чань (VIII–IX ст.), Ма-цзу і Лінь-цзи. 1700+ коанів Хакуїна Екаку (1686–1769). Коани про \'Іншого\' розчиняють межу між я і іншим.',
+  instruction:'Оберіть людину з якою вам важко або яку ви не розумієте. Носіть питання: «Хто ця людина насправді — до мого уявлення про неї?» Не шукайте відповіді — тримайте питання як коан. Замість реакції на її слова зупиняйтесь на мить і питайте: «Хто зараз говорить?» Весна відкриває свіжий погляд.',
+  mantra:'Хто ти до мого образу тебе?',
+  closes:'В кінці дня помітьте: чи змінилось щось у тому як ви сприймаєте цю людину?',
+  variants:['Класичний Koan \'Му!\' (Чжаочжоу)','\'Покажи обличчя до народження батьків\'','Терапевтичний Парадокс (Еріксон)','Відкрите Питання у NVC']
+},
+'YOU-NORTH-SUMMER':{
+  name:'Дзадзен обличчям до обличчя',
+  tagline:'Твоя присутність — моє дзеркало',
+  trad:'Дзен · Гештальт · Martin Buber · 1923',
+  duration:'20 хвилин',
+  posture:'Двоє сидять обличчям одне до одного',
+  bodyNote:'Периферійний зір бачить партнера без прямого погляду',
+  history:'Парна медитація обличчям до обличчя — деякі Дзен-лінії. \'Eye contact meditation\' у Gestalt. Martin Buber \'I and Thou\' (1923): зустріч Я-Ти як повна взаємна присутність.',
+  instruction:'Сядьте з партнером обличчям до обличчя на відстані витягнутої руки. Сидіть у zazen — без слів, без посмішок, без пояснень. Очі напівзакриті або у м\'якому контакті. Відчуйте присутність іншого без необхідності щось з нею робити. Хто є тут між вами у цій тиші?',
+  mantra:'Тиша між нами — третя особа',
+  closes:'Вклоніться один одному після завершення — глибокий вклін, як визнання.',
+  variants:['I-Thou медитація (Гештальт)','Eye Contact Meditation (10 хв)','Докусан: зустріч вчитель-учень','Beloved practice (Тантра)']
+},
+'YOU-NORTH-AUTUMN':{
+  name:'Не цей образ, не та роль',
+  tagline:'Що лишається без моїх проекцій',
+  trad:'Адвайта · Крішнамурті · Юнг · 1969',
+  duration:'25 хвилин',
+  posture:'Сидячи у тиші',
+  bodyNote:'Тіло розслаблене, думки спостерігаються а не переживаються',
+  history:'Неті-Неті для стосунків — Адвайта Веданта. Крішнамурті \'Freedom from the Known\' (1969): psychological image. Jung (1921): проекція як психологічний механізм.',
+  instruction:'Уявіть людину з якою у вас складні стосунки. «Мій образ цієї людини — не ця людина». «Мій страх щодо неї — не вона». «Моя образа — не вона». «Моє бажання щоб вона змінилась — не вона». Що залишається коли ви відкинули всі свої проекції? Осінь очищує лінзу.',
+  mantra:'Не цей образ, не ця роль — хто ти?',
+  closes:'Відчуйте легке полегшення і цікавість замість важкості стосовно цієї людини.',
+  variants:['Крішнамурті: спостереження без спостерігача','Юнгіанська робота з тінню','Гелінгер: системні проекції','Процесна Робота (Мінделл)']
+},
+'YOU-NORTH-WINTER':{
+  name:'Анатта — медитація на не-я',
+  tagline:'Я якого немає — найглибший спокій',
+  trad:'Тхеравада · Буддизм · Три Ознаки',
+  duration:'25 хв',
+  posture:'Сидячи нерухомо',
+  bodyNote:'Повна нерухомість тіла, увага аналітична але не напружена',
+  history:'Анатта (анатман, अनात्मन् — \'не-я\') — одна з трьох ознак існування (Аніча, Дуккха, Анатта). Пряме спростування Ведичного Атману у Буддизмі Шак\'ямуні. Описана у Анатталаккхана Сутті (SN 22.59) — першій проповіді після Просвітлення. У Тхеравада-медитації дослідження Анатти є центральним шляхом до Ніббани.',
+  instruction:'Спрямуйте увагу на відчуття \'я\'. Досліджуйте аналітично: тіло — не-я (воно змінюється незалежно від мого бажання). Відчуття — не-я. Сприйняття — не-я. Ментальні формації — не-я. Свідомість — не-я. Що залишається? Не порожнеча — а відкритість без краю.',
+  mantra:'Нетті — нетті (не це, не це)',
+  closes:'У тиші що залишається після розчинення я — залишайтесь. Це і є зимова Анатта.',
+  variants:['Аналітична медитація Анатта (Тхеравада)','П\'ять Скандг: аналіз компонентів я','Шуньята: Махаяна-версія Анатта','Дзогчен: Рігпа і Анатта як одне']
+},
+'THEY-EAST-SPRING':{
+  name:'Мантра для предків',
+  tagline:'Мій голос — їхній голос',
+  trad:'Ведична традиція · Шраддха · Гаруда Пурана',
+  duration:'20 хвилин',
+  posture:'Сидячи, обличчям на схід',
+  bodyNote:'Голос з живота, відчуваєте його резонанс у кістках',
+  history:'Пітрі-Пуджа (pitṛpūjā) — центральний ведичний ритуал. Шраддха (श्राद्ध) описана у Гаруда Пурані. Японська Обон, китайська Цінміне — паралелі у різних традиціях.',
+  instruction:'Сядьте і відчуйте за спиною лінію предків — всіх хто прийшов до вас. Почніть повторювати просту мантру або ім\'я яке пов\'язане з вашим родом або традицією. Нехай ваш голос буде і вашим і їхнім одночасно. Весняний підйом — ваша практика живить і вас і тих хто прийшов до вас.',
+  mantra:'Ом — або ім\'я вашого роду',
+  closes:'Надішліть останнє повторення мантри назад у часі — всім предкам від початку роду.',
+  variants:['Ведична Шраддха: підношення воді','Японська Обон-практика','Генеалогічна медитація','Гавайська Ho\'oponopono для роду']
+},
+'THEY-EAST-SUMMER':{
+  name:'Нейгуань — активна уява даосу',
+  tagline:'Образ приходить сам',
+  trad:'Юнгіанська психологія · Active Imagination · 1913',
+  duration:'30 хвилин',
+  posture:'Сидячи або лежачи з закритими очима',
+  bodyNote:'Очі розслаблені, образи не форсуються а спостерігаються',
+  history:'Активна уява (Active Imagination) — Карл Юнг (1913–1916, після розриву з Фройдом), \'Червона Книга\' (Liber Novus). Паралель у даоїзмі: Нейгуань образів богів-органів у Хуантін Цзін.',
+  instruction:'Закрийте очі і запросіть образ — будь-який. Не думайте, не вибирайте — просто зачекайте. Образ з\'явиться: людина, тварина, пейзаж, символ. Спостерігайте його. Якщо він рухається — спостерігайте рух. Запитайте образ: «Що ти несеш для мене?» Дозвольте відповіді прийти не словами, а відчуттями або рухом образу.',
+  mantra:'Я відкритий. Приходь.',
+  closes:'Подякуйте образу і запишіть або намалюйте що з\'явилось.',
+  variants:['Юнгіанська Активна Уява (письмова)','Процесна Робота (Мінделл): образи і тіло','IFS: частини і менеджери','Гіпнотичний регрес']
+},
+'THEY-EAST-AUTUMN':{
+  name:'Доброта назад у часі',
+  tagline:'Надсилаю любов тим хто був',
+  trad:'Тхеравада · Тибет · Тіт Нат Хан · XX ст.',
+  duration:'20 хвилин',
+  posture:'Сидячи тихо',
+  bodyNote:'Тепло у серці розширюється назад у часі',
+  history:'Метта для предків — Тіт Нат Хан (молитва за загиблих у В\'єтнамі). Японська Оторо. Тибет: Міларепа (1052–1135) вчив молитви за померлих як Бодгічітту у часі.',
+  instruction:'Уявіть лінію ваших предків. Надсилайте їм Метта-фрази: «Нехай ви будете щасливими, здоровими, у мирі». Осінь — збирати врожай і вдячність. Відчуйте що їх радощі і печалі, їх мудрість і помилки — все це дало вам саме те існування яке у вас є зараз. Вдячність назад у часі.',
+  mantra:'Дякую вам за ваше існування',
+  closes:'Відчуйте себе ланкою у ланцюзі: отримали і передаєте далі.',
+  variants:['Метта за конкретних предків','Буддійська Паріта за померлих','Тибетський Пгова за предків','Genogram meditation']
+},
+'THEY-EAST-WINTER':{
+  name:'Дгьяна — зимова медитація мовчання',
+  tagline:'Занурення без об\'єкта і без шукача',
+  trad:'Раджа-Йога · Патанджалі · Аштанга',
+  duration:'30–45 хв',
+  posture:'Нерухомо у теплі, закриті очі',
+  bodyNote:'Дихання майже непомітне, тіло як камінь, розум відкритий',
+  history:'Дгьяна (ध्यान — \'медитація, споглядання\') — сьома з восьми гілок Патанджалі (Йога-Сутри 3.2). Стан де потік усвідомленості безперервно тече до об\'єкта медитації — на відміну від Дгарани (концентрації де є зусилля). Санскритське Дгьяна → китайське Чань → японське Дзен. Позиція THEY-NORTH-WINTER: Дгьяна без об\'єкта — найвища форма.',
+  instruction:'Після попередньої практики (Пранаяма або Пратьяхара) — просто сидіть. Не вибирайте об\'єкт. Не медитуйте \'про\' щось. Дозвольте усвідомленості бути чистою і стабільною — як зимова вода під льодом. Дгьяна приходить сама коли умови дозрівають.',
+  mantra:'Ом — і тиша після Ом',
+  closes:'Не завершуйте різко — поступово поверніться через Ом до тіла і кімнати.',
+  variants:['Дгарана → Дгьяна → Самадхі: три ступені','Самадхі як Дгьяна без повернення','Ніргуна-Дгьяна: без форми і атрибутів','Сагуна-Дгьяна: з об\'єктом (Ішта-дева)']
+},
+'THEY-SOUTH-SPRING':{
+  name:'Підношення всього',
+  tagline:'Відпускаю все у вогонь',
+  trad:'Ваджраяна · Тибет · XIII ст.',
+  duration:'25 хвилин',
+  posture:'Сидячи перед уявним або справжнім вогнем',
+  bodyNote:'Руки розкриті вгору, долоні відкриті',
+  history:'Мандала-підношення (Mandala Offering) — тантрична практика Ваджраяни. Описана у Тибеті (XIII ст.). Традиційно виконується 100 000 разів у Нґондро. Наґарджуна описав підношення без Я.',
+  instruction:'Уявіть що вся всесвітня мандала — все існування — є підношенням. Візуалізуйте прекрасний диск всесвіту і піднесіть його свідомістю вище себе. «Я підношу все що є — красу, страждання, радість і біль — як безмежне підношення». Весняний вогонь приймає все без остатку.',
+  mantra:'Все є підношенням, нічого не тримаю',
+  closes:'Відчуйте легкість яка залишається коли ви відпустили навіть своє власне існування.',
+  variants:['Коротка Мандала (37 елементів)','Довга Мандала (Нґондро)','Щоденне підношення їжі (ламаїзм)','Символічне підношення природі']
+},
+'THEY-SOUTH-SUMMER':{
+  name:'Рігпа у вогні',
+  tagline:'Усвідомленість у максимальній яскравості',
+  trad:'Тибетська Ньїнгма · Намхай Норбу · XX ст.',
+  duration:'Без обмежень',
+  posture:'Будь-яка',
+  bodyNote:'Розслаблені очі, яскраве усвідомлення всього поля сприйняття',
+  history:'Рігпа-Дзогчен у піковому стані — Намхай Норбу: Дзогчен найлегше впізнати в інтенсивності. Д.Т. Судзукі описав сатора як \'осяяння у блискавці\'. Протилежність до медитації що шукає спокою.',
+  instruction:'У піку літнього вогню — не притлумлюйте інтенсивність. Дозвольте усвідомленості бути такою ж інтенсивною як літнє сонце. Рігпа — відкрита яскрава порожня усвідомленість — не темна і не тиха: вона яскрава як вогонь, відкрита як небо, порожня як простір. Всі думки, відчуття і явища — рух у цій яскравості.',
+  mantra:'Рігпа — яскравість без джерела',
+  closes:'Цю практику не завершують — вона продовжується у всьому що є.',
+  variants:['Дзогчен Трекчо','Дзогчен Тогал: практики з сонцем','Рігпа у щоденному русі','Тантра Таємного Серця (Кунджед Ґьялпо)']
+},
+'THEY-SOUTH-AUTUMN':{
+  name:'Пхова — перенесення',
+  tagline:'Готуюсь до великого переходу',
+  trad:'Ваджраяна · Шість практик Наропи · XI ст.',
+  duration:'30 хвилин',
+  posture:'Сидячи прямо, з\'єднані долоні',
+  bodyNote:'Фізичне відчуття підйому у тімені під час практики',
+  history:'Пгова (ཕོ་བ) — одна з шести практик Наропи (XI ст.). Бардо Тгодол (Тибетська книга мертвих, VIII ст.). Традиційно: під керівництвом вчителя, з фізичним знаком у тімені.',
+  instruction:'Уявіть вгорі простір чистої яскравої усвідомленості — Будда Амітабха, Чисте Небо або просто відкрите світло. Під час вдиху тягніть свідомість вгору від серця до тімені. Під час видиху проектуйте свідомість у те світло вгорі. Осінь практикує відпускання навіть самого себе.',
+  mantra:'Хік — (вдих вгору), Ка — (видих у світло)',
+  closes:'Поверніться у звичайний стан свідомості і відчуйте вдячність за це тіло і цей момент.',
+  variants:['Традиційна Пгова (7-денний ретрит)','Спрощена Пхова для щоденного практику','Медитація при смерті близького','Бардо-практика: підготовка до переходу']
+},
+'THEY-SOUTH-WINTER':{
+  name:'Зимове сонцестояння',
+  tagline:'Тиша найдовшої ночі',
+  trad:'Даосизм · Дунчжі · Йоль · Sol Invictus',
+  duration:'Від заходу до сходу (або 1 год)',
+  posture:'Нерухомо, у темряві',
+  bodyNote:'Повна нерухомість, свічка тільки якщо потрібна безпека',
+  history:'Дунчжі (冬至) — найвищий ритуальний день у Китаї. Паралелі: Йоль (скандинавська), Saturnalia (римська), Sol Invictus, Різдво — синхронізоване зі сонцестоянням. Архетип відновлення у темряві.',
+  instruction:'У найдовшу ніч — не боріться з темрявою. Сидіть у ній. Відчуйте як зима не лише забирає але і зберігає — насіння під снігом. Ця ритуальна тиша не для відпочинку — для визнання того що поновлення можливе тільки через повну зупинку. Чекайте. Не думайте. Просто будьте у цьому найтемнішому моменті.',
+  mantra:'— (тиша і очікування)',
+  closes:'На світанку або після практики відчуйте перший рух нового — у тілі, у думці, у серці.',
+  variants:['Ніч Зимового Сонцестояння (від заходу до сходу)','Йоль-ритуал: вогнище і наміри','Буддійська ніч усвідомлення (Васа)','Особиста церемонія нового Ян-циклу']
+},
+'THEY-WEST-SPRING':{
+  name:'Весняне очищення органів',
+  tagline:'Тіло відновлюється зсередини',
+  trad:'Даосизм · Хуантін Цзін · III–IV ст.',
+  duration:'30 хвилин',
+  posture:'Сидячи або лежачи',
+  bodyNote:'Видих через рот зі звуком, вдих через ніс',
+  history:'Нейгуань (內觀) описана у Хуантін Цзін (III–IV ст.). Шість Цілющих Звуків систематизовані Тао Хунцзін (456–536). Мантак Чіа (Universal Tao, 1979) поширив на Захід.',
+  instruction:'Спрямуйте увагу в область печінки (права сторона під ребрами). Уявіть там зелений весняний колір і зростаючу енергію дерева. Виконайте звук «Шшш» (Сюй) на видиху — 6 разів — звільняючи застояну злість і напруження. Потім відчуйте тепле тепло і доброту що заповнює печінку. Весна — час печінки і початку.',
+  mantra:'Шшш — звільнення, тепло — відновлення',
+  closes:'Пройдіть усіма шістьма органами коротко або зупиніться де відчули найбільший резонанс.',
+  variants:['Шість Цілющих Звуків (Ліу Цзі Це)','П\'ять Елементів + органи','Qigong органів Мантак Чіа','Нейгуань у Квань-Чжен']
+},
+'THEY-WEST-SUMMER':{
+  name:'Відкрите небо свідомості',
+  tagline:'Думки хмари, я небо',
+  trad:'MBSR · Дзогчен · Lutz et al. · 2009',
+  duration:'30 хвилин',
+  posture:'Сидячи або лежачи дивлячись вгору',
+  bodyNote:'Погляд м\'який і розфокусований, вся увага — відкрита',
+  history:'Open Monitoring — Lutz et al. (2009): знижує P3b (менша обробка відволікань). Antoine Lutz (Mind & Life Institute): досвідчені OM-практики мають ширший bandwidth уваги. Паралель у Шікантазі і Рігпа.',
+  instruction:'Відкрийте усвідомленість як небо. Думки, відчуття, звуки — все це хмари що проходять. Ви не вибираєте що спостерігати і не відкидаєте нічого — просто залишайтесь відкритим простором у якому все відбувається. Влітку небо особливо яскраве і відкрите — дозвольте своїй усвідомленості бути такою ж.',
+  mantra:'Небо не чіпають хмари',
+  closes:'Відкрийте очі і принесіть це відчуття відкритого неба у взаємодію з навколишнім світом.',
+  variants:['Шікантаза (Дзен): відкрите сидіння','Дзогчен: Рігпа як відкрите поле','MBSR: Choiceless Awareness (Кабат-Зінн)','Медитація на природі (звуки, запахи)']
+},
+'THEY-WEST-AUTUMN':{
+  name:'Пам\'ять смерті',
+  tagline:'Помру — як живу тоді?',
+  trad:'Тхеравада · Стоїцизм · Terror Management · 1986',
+  duration:'25 хвилин',
+  posture:'Лежачи на спині',
+  bodyNote:'Тіло важке і нерухоме, дихання природне і свідоме',
+  history:'Маранасаті (мरणस्मृति) — 9 класичних об\'єктів медитації Тхеравади. \'Memento mori\' — Марк Аврелій. Terror Management Theory (Greenberg, 1986): пам\'ять смерті може бути трансформаційною.',
+  instruction:'Ляжте і відчуйте своє тіло як смертне. «Це тіло колись перестане дихати». Не з жахом — з відкритістю. «Якщо б я помирав завтра — що має значення? Що я б відпустив? Що залишилось би важливим?» Осіння медитація на смерть — не для страху, а для ясності що лишається коли тимчасове відпадає.',
+  mantra:'Memento mori — пам\'ятай що смертний',
+  closes:'Встаньте повільно. Перший крок після цієї практики — перший крок нового пріоритету.',
+  variants:['Samyutta Nikaya: 9 цвинтарних медитацій','Стоїчна: Marcus Aurelius / Сенека','Terror Management: смертність і цінності','Death Cafe: розмова про смерть']
+},
+'THEY-WEST-WINTER':{
+  name:'Сон свідка',
+  tagline:'Між сном і неспанням — є я',
+  trad:'Адвайта Веданта · Мандукья Упанішада · 400 до н.е.',
+  duration:'35 хвилин',
+  posture:'Лежачи, повністю розслаблено',
+  bodyNote:'Дозвольте тілу повністю зануритись, свідомість залишається тонкою ниткою',
+  history:'Йога-Нідра свідка — Мандукья Упанішада (400–200 до н.е.): чотири стани (Джаграт, Свапна, Сушупті, Турія). Рамана Махарші: стан між сном і неспанням як \'Хто спостерігає сон?\'',
+  instruction:'Yoga Nidra для позиції свідка: ляжте і повністю розслабтесь. Коли тіло засинає — залишайте тонку нитку усвідомленості. Не утримуйте силою — просто помічайте: «Тіло спить, але є щось що знає це». Хто є цим свідком що бачить навіть сновидіння? Зима — час знайти того хто не спить навіть уві сні.',
+  mantra:'Я — свідок сну і неспання',
+  closes:'Повертайтесь повільно — несучи в собі пам\'ять про того хто споглядав.',
+  variants:['Мандукья Упанішада: стани свідомості','Рамана: \'Хто є свідком сну?\'','Sleep Yoga (Тибет): усвідомлені сновидіння','WILD (Wake-Initiated Lucid Dream)']
+},
+'THEY-NORTH-SPRING':{
+  name:'Нейгуань — споглядання Безмежного',
+  tagline:'Дао проявляється у порожнечі',
+  trad:'daoist',
+  duration:'45 хв',
+  posture:'Сидячи прямо, обличчям на північ',
+  bodyNote:'Погляд розфокусований, тіло як точка у просторі',
+  history:'Гуань (觀 — \'споглядання\') — центральне поняття даоської медитації. \'Канон Гуань-Їнь\' (關尹子) описує споглядання Першопринципу. Лао-цзи (ДДЦ, 16): \'Повернення до Кореня — це Спокій\'. Даоська Нейгуань у традиції Мао-Шань (IV ст.) включала споглядання безмежних небесних просторів.',
+  instruction:'Спрямуйте усвідомленість послідовно вгору: тіло → кімната → місто → горизонт → небо → зоряний простір → безмежне. Залишайтесь у найширшому просторі без спроби його охопити.',
+  mantra:'Дао — незбагненне і невичерпне',
+  closes:'Повільно повертайтесь: зоряний простір → небо → кімната → тіло → дихання.',
+  variants:['Гуань-Їнь: споглядання Першопринципу','Нейгуань традиції Мао-Шань (IV ст.)','Тайцзи-Космологія: народження Інь/Ян','ДДЦ 16: \'Повернення до Кореня\'']
+},
+'THEY-NORTH-SUMMER':{
+  name:'Забути у розквіті',
+  tagline:'Цзо Ван у найяскравіший момент',
+  trad:'Класичний Даосизм · Чжуанцзі · Екхарт · XIV ст.',
+  duration:'40 хвилин',
+  posture:'Сидячи у літньому світлі',
+  bodyNote:'Відпускайте навіть намагання відпустити',
+  history:'Цзо-Ван у \'Літньому\' вимірі — Чжуанцзі: \'Злився з Великим Єдиним в радості\'. Майстер Екхарт \'Abgeschiedenheit\' (відрешеність) як відпускання у Бозі, а не від Бога. Протилежність зимовому Цзо-Вану.',
+  instruction:'Відпускайте у порядку: форму і ритуал — відпустіть. Думки про практику — відпустіть. Усвідомлення «я практикую» — відпустіть. Різницю між Дао і собою — відпустіть. Залишіться у великому забутті — не темному зимовому, а яскравому літньому: забутті у розквіті, де немає того хто забуває.',
+  mantra:'Цзо ван — зникнути у яскравому',
+  closes:'Поверніться через тіло — повільно відчуйте руки, ноги, дихання і кімнату навколо.',
+  variants:['Цзо-Ван у природі (поле, ріка)','Зимовий Цзо-Ван: у спустошенні','Вуцзі: нерухомість перед і після','Чжуанцзі-читання як підготовка']
+},
+'THEY-NORTH-AUTUMN':{
+  name:'Трекчо — прорізання',
+  tagline:'Відпускаєш навіть медитацію',
+  trad:'Тибетська Ньїнгма · Лонченпа · XIV ст.',
+  duration:'Без обмежень',
+  posture:'Будь-яка стійка поза',
+  bodyNote:'Повне фізичне розслаблення при повній ментальній ясності',
+  history:'Трекчо (ཁྲེགས་ཆོད, \'прорізання надміру\') — перша з двох основних практик Дзогчену. Лонченпа Рабджам (1308–1364): \'Сім Скарбниць\'. Передача: лінії Кама і Терма.',
+  instruction:'Тrekcho — «прорізання надміру». Не намагайтесь досягти рігпа — дозвольте розуму розслабитись у своїй природній стані. Коли думки виникають — не переслідуйте і не відштовхуйте. Помітьте: думки виникають у рігпа, у рігпа лишаються, у рігпа зникають. Осінь відпускає навіть саму практику відпускання.',
+  mantra:'Нічого не відкидати, нічого не культивувати',
+  closes:'Немає завершення — тільки продовження рігпа у наступний момент.',
+  variants:['Трекчо у спокої (Шінай)','Трекчо у русі (Кедьяб)','Тогал: візійні практики','Рушан: розмежувальні практики']
+},
+'THEY-NORTH-WINTER':{
+  name:'Чиста порожнеча',
+  tagline:'00 00 00 — абсолютне начало',
+  trad:'Мадгьямака · Наґарджуна · II ст.',
+  duration:'Без обмежень',
+  posture:'Нерухомо у повній тиші',
+  bodyNote:'Тіло як порожній посуд, дихання майже непомітне',
+  history:'Шуньята (शून्यता) — Наґарджуна \'Муламадхьямакарікар\' (II ст.): всі явища порожні від самобуття. Чандракірті (VII ст.): Прасангіка-Мадгьямака. 64-й архетип — останній і перший.',
+  instruction:'Це архетип 64-й — останній і перший. Суньята: порожнеча не як відсутність, а як відкритість з якої виникає все. Не медитуйте — і не не-медитуйте. Будьте тим простором у якому медитація і не-медитація однаково виникають і зникають. Зимова Північ, позиція свідка, максимум Інь — стіна закінчується і починається безмежне.',
+  mantra:'— (00 00 00 — тиша тиші)',
+  closes:'Із 64-го архетипу повертається перший — ME · EAST · SPRING · 10 10 10. Круг замкнений.',
+  variants:['Мадгьямака: Суньята як аналітика','Праджняпараміта: Серцева Сутра','Ваджраяна: Суньята + Каруна = Бодгічітта','Дзогчен: Рігпа і Суньята нерозлучні']
+},
+};
+const S={tab:'atlas',filter:{who:null,where:null,when:null,trad:null},sel:null};
+
+// ── helpers ──
+function enc6(wi,ri,ni){return(wi.toString(2).padStart(2,'0')+ri.toString(2).padStart(2,'0')+ni.toString(2).padStart(2,'0')).split('').map(Number)}
+function trigs(b){return[parseInt(b.slice(0,3).join(''),2),parseInt(b.slice(3).join(''),2)]}
+function x(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+const mob=()=>window.innerWidth<=820;
+
+// ── sidebar filters ──
+function renderSidebar(){
+  const WM={ME:{g:'☽',c:'var(--me)'},WE:{g:'☀',c:'var(--we)'},YOU:{g:'☾',c:'var(--you)'},THEY:{g:'❊',c:'var(--they)'}};
+  const DM={EAST:{s:'↑',c:'#B8860B'},SOUTH:{s:'→',c:'#8B2500'},WEST:{s:'↓',c:'#1B5E6A'},NORTH:{s:'←',c:'#374247'}};
+  const SM={SPRING:{s:'○',l:'Вс',c:'#5D7A3E'},SUMMER:{s:'●',l:'Лт',c:'#8B6914'},AUTUMN:{s:'◑',l:'Ос',c:'#7A4022'},WINTER:{s:'◯',l:'Зм',c:'#2B4F6E'}};
+  const f=S.filter;
+  const pill=(cls,ic,lb,on,color,cb)=>
+    `<button class="${cls}${on?' on':''}" style="${on?`color:${color};border-color:${color}`:''}" onclick="${cb}">
+      <span class="sp-ic">${ic}</span><span class="sp-lb">${lb}</span></button>`;
+  document.getElementById('sb-who').innerHTML=
+    ['ME','WE','YOU','THEY'].map(w=>pill('spill',WM[w].g,WM[w].m,f.who===w,WM[w].c,`setF('who','${w}')`)).join('');
+  document.getElementById('sb-where').innerHTML=
+    ['EAST','SOUTH','WEST','NORTH'].map(w=>pill('spill',DM[w].s,w[0],f.where===w,DM[w].c,`setF('where','${w}')`)).join('');
+  document.getElementById('sb-when').innerHTML=
+    ['SPRING','SUMMER','AUTUMN','WINTER'].map(w=>pill('spill',SM[w].s,SM[w].l,f.when===w,SM[w].c,`setF('when','${w}')`)).join('');
+}
+
+// ── filter bar ──
+function renderFbar(){
+  const f=S.filter, hasAny=f.who||f.where||f.when;
+  const chip=(label,on,bg,cb)=>
+    `<button class="fchip${on?' on':''}" style="${on?`background:${bg}`:''}" onclick="${cb}">${label}</button>`;
+  document.getElementById('fbar').innerHTML=`
+    <div class="fg"><div class="fg-lbl">Хто практикує</div><div class="fg-row">
+      ${['ME','WE','YOU','THEY'].map(w=>{const p=PHASES[w],on=f.who===w;
+        return chip(`${p.glyph} ${p.name} <span style="font-family:var(--mono);font-size:.62rem;opacity:.5">${w} · ${p.bits}</span>`,on,p.color,`setF('who','${w}')`);
+      }).join('')}</div></div>
+    <div class="fsep"></div>
+    <div class="fg"><div class="fg-lbl">Напрям · Елемент</div><div class="fg-row">
+      ${['EAST','SOUTH','WEST','NORTH'].map(w=>{const d=DIRS[w],on=f.where===w;
+        return chip(`${d.sym} ${w} <span style="font-size:.7rem;opacity:.65">· ${d.el}</span>`,on,d.color,`setF('where','${w}')`);
+      }).join('')}</div></div>
+    <div class="fsep"></div>
+    <div class="fg"><div class="fg-lbl">Сезон · Енергія</div><div class="fg-row">
+      ${['SPRING','SUMMER','AUTUMN','WINTER'].map(w=>{const s=SEAS[w],on=f.when===w;
+        return chip(`${s.sym} ${s.lbl}`,on,s.color,`setF('when','${w}')`);
+      }).join('')}</div></div>
+    <button class="fclear${hasAny?'':' hide'}" onclick="clearF()">✕ Скинути фільтри</button>`;
+}
+
+// ── atlas grid ──
+function matches(a){
+  const f=S.filter;
+  if(f.who   && f.who  !==a.who)   return false;
+  if(f.where && f.where!==a.where) return false;
+  if(f.when  && f.when !==a.when)  return false;
+  if(f.trad  && f.trad !==a.trad)  return false;
+  return true;
+}
+
+function renderAtlas(){
+  const TC=['#2E6DB4','#2E8B57','#6B8E23','#B8860B','#C0671E','#A02020','#6B1F4A','#5B3E8B'];
+  const TN=['Blue','Green','Lime','Amber','Orange','Crimson','Burgundy','Violet'];
+  const WL=['ME','WE','YOU','THEY'], RL=['EAST','SOUTH','WEST','NORTH'], NL=['SPRING','SUMMER','AUTUMN','WINTER'];
+  let html='';
+  WL.forEach(who=>{
+    const ph=PHASES[who];
+    const cells=MAP64.filter(a=>a.who===who&&matches(a));
+    if(!cells.length)return;
+    html+=`<div class="phase-sec">
+      <div class="phase-hdr" style="background:${ph.bg};border-left:3px solid ${ph.color}">
+        <span class="ph-gl">${ph.glyph}</span>
+        <span class="ph-name" style="color:${ph.color}">${ph.name}</span>
+        <span class="ph-who" style="color:${ph.color}">· ${who} · ${ph.bits}</span>
+        <span class="ph-desc">${ph.desc}</span>
+      </div><div class="card-grid">`;
+    cells.forEach(a=>{
+      const bits=enc6(WL.indexOf(a.who),RL.indexOf(a.where),NL.indexOf(a.when));
+      const [hi,lo]=trigs(bits);
+      const prac=PD[a.id], isSel=S.sel?.id===a.id;
+      const tc=TRAD_C[a.trad]||TRAD_C.buddhist;
+      const tl=a.trad==='buddhist'?'Buddhist':a.trad==='hindu'?'Hindu':'Daoist';
+      html+=`<div class="card t-${a.trad}${isSel?' sel':''}" onclick="pickArch('${a.id}')">
+        <div class="c-top">
+          <span class="c-num">#${String(a.idx).padStart(2,'0')}</span>
+          <div class="c-coords">
+            <span class="c-coord">${DIRS[a.where].sym}${a.where[0]}</span>
+            <span class="c-coord">${SEAS[a.when].sym}${a.when.slice(0,2)}</span>
+          </div>
+        </div>
+        <span class="c-trad">${tl}</span>
+        <div class="c-name" style="color:${ph.color}">${x(prac?prac.name:a.prac)}</div>
+        <div class="c-foot">
+          <span class="c-bits">${bits.join('')}</span>
+          <span class="c-dot" style="background:${tc.md}"></span>
+        </div>
+        <div class="c-stripe" style="background:linear-gradient(90deg,${TC[hi]},${TC[lo]})"></div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  document.getElementById('atlas').innerHTML=html||
+    '<div style="padding:2.5rem;color:var(--muted);font-style:italic;text-align:center;font-size:.9rem">Немає архетипів за обраними фільтрами</div>';
+}
+
+// ── detail panel ──
+function buildDetail(a){
+  const TC=['#2E6DB4','#2E8B57','#6B8E23','#B8860B','#C0671E','#A02020','#6B1F4A','#5B3E8B'];
+  const TN=['Blue','Green','Lime','Amber','Orange','Crimson','Burgundy','Violet'];
+  const WL=['ME','WE','YOU','THEY'], RL=['EAST','SOUTH','WEST','NORTH'], NL=['SPRING','SUMMER','AUTUMN','WINTER'];
+  const ph=PHASES[a.who], d=DIRS[a.where], s=SEAS[a.when], prac=PD[a.id];
+  const bits=enc6(WL.indexOf(a.who),RL.indexOf(a.where),NL.indexOf(a.when));
+  const [hi,lo]=trigs(bits);
+  const tc=TRAD_C[a.trad]||TRAD_C.buddhist;
+  if(!prac)return`<div style="padding:2rem;color:rgba(255,255,255,.3);font-style:italic">Дані відсутні</div>`;
+  return`
+    <div class="det-tbar" style="background:linear-gradient(90deg,${tc.md},${tc.lt})"></div>
+    <div class="det-head">
+      <div class="det-phase" style="color:${ph.color}">${ph.glyph} &nbsp;${ph.name}</div>
+      <div class="det-chips">
+        <div class="det-chip"><span class="det-ic">${ph.glyph}</span>${a.who}</div>
+        <div class="det-chip"><span class="det-ic">${d.sym}</span>${a.where} &middot; ${d.el}</div>
+        <div class="det-chip"><span class="det-ic">${s.sym}</span>${a.when} &middot; ${s.en}</div>
+      </div>
+      <div class="det-bits">
+        <span class="bits-raw">${bits.join(' ')}</span>
+        <span class="tgp" style="background:${TC[hi]}22;color:${TC[hi]};border:1px solid ${TC[hi]}44">▲${bits.slice(0,3).join('')} ${TN[hi]}</span>
+        <span class="tgp" style="background:${TC[lo]}22;color:${TC[lo]};border:1px solid ${TC[lo]}44">▽${bits.slice(3).join('')} ${TN[lo]}</span>
+      </div>
+    </div>
+    <div class="det-body">
+      <div class="d-name" style="color:${tc.lt}">${x(prac.name)}</div>
+      <div class="d-tag">${x(prac.tagline)}</div>
+      <div class="d-tlab" style="background:${tc.bg};color:${tc.lt}">◈ ${x(tc.lbl)} &nbsp;·&nbsp; ${x(prac.trad||'')}</div>
+      <div class="d-meta">
+        <div class="d-f"><div class="d-fl">Тривалість</div><div class="d-fv">${x(prac.duration)}</div></div>
+        <div class="d-f"><div class="d-fl">Поза</div><div class="d-fv">${x(prac.posture)}</div></div>
+        ${prac.bodyNote?`<div class="d-f" style="grid-column:1/-1"><div class="d-fl">Тіло · Дихання</div><div class="d-fv">${x(prac.bodyNote)}</div></div>`:''}
+      </div>
+      <div class="d-hist" style="background:${tc.bg};border-color:${tc.md}22">
+        <div class="d-hist-h" style="color:${tc.lt}"><span>◎</span> Історичний контекст</div>
+        <div class="d-hist-t">${x(prac.history||'')}</div>
+      </div>
+      <div class="d-sec">
+        <div class="d-sh" style="color:${tc.lt}">Інструкція</div>
+        <div class="d-txt d-instr">${x(prac.instruction)}</div>
+      </div>
+      <div class="d-mantra" style="color:${tc.lt};border-color:${tc.lt}">${x(prac.mantra)}</div>
+      <div class="d-sec">
+        <div class="d-sh" style="color:${tc.lt}">Варіанти практики</div>
+        <div class="d-vars">${(prac.variants||[]).map(v=>`<div class="d-var">${x(v)}</div>`).join('')}</div>
+      </div>
+      ${prac.closes?`<div class="d-closes">${x(prac.closes)}</div>`:''}
+    </div>`;
+}
+
+function renderDetail(){
+  const el=document.getElementById('detail');
+  if(!S.sel){
+    el.innerHTML=`<div class="det-empty">
+      <div class="det-empty-ic">⬡</div>
+      <div class="det-empty-h">Оберіть архетип</div>
+      <div class="det-empty-s">Натисніть на картку<br>в атласі або практику<br>в теорії</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML=buildDetail(S.sel);
+}
+function renderSheet(){
+  if(!S.sel)return;
+  document.getElementById('dsheet-content').innerHTML=buildDetail(S.sel);
+}
+
+// ── theory ──
+function renderTheory(){
+  const TAXO=[
+    {n:1,nm:'Концентрація · Samatha',    mech:'Односпрямована увага на одному об\'єкті',   q:'Де моя увага?'},
+    {n:2,nm:'Відкрите спостереження',    mech:'Увага відкрита до всього без вибору',        q:'Що виникає само?'},
+    {n:3,nm:'Не-думання · Wu-Nian',      mech:'Переривання концептуального потоку',         q:'Хто думає?'},
+    {n:4,nm:'Візуалізація · Bhavana',    mech:'Побудова і утримання внутрішнього образу',   q:'Що я культивую?'},
+    {n:5,nm:'Тіло і Рух · Qigong',       mech:'Увага і свідомість через фізичне відчуття',  q:'Де Ці рухається?'},
+    {n:6,nm:'Звук і Вібрація · Nada',    mech:'Звуковий резонанс як вектор свідомості',     q:'Що звучить?'},
+    {n:7,nm:'Серце і Поле · Brahmaviha', mech:'Культивування доброти і співчуття до інших', q:'Ким я є для інших?'},
+  ];
+
+  const TRADS=[
+    {key:'buddhist', icon:'◉', color:'#2E5CAA', lt:'#6090D8', bg:'rgba(46,92,170,.07)',
+     nm:'Буддизм', sub:'Тхеравада · Ваджраяна · Дзен',
+     desc:'Шлях пробудження через безпосереднє пізнання природи розуму. Будда (VI ст. до н.е.) виявив що страждання виникає з незнання і припиняється через медитацію і мудрість.',
+     schools:['Тхеравада (Шрі Ланка, Бірма)','Ваджраяна / Тибет','Дзен / Чань (Японія, Китай)','Ньїнгма','Карг\'юпа'],
+     prac:[
+       {id:'B1',nm:'Anapanasati',        sb:'Усвідомлення дихання',
+        who:'ME',where:'EAST',when:'SPRING',dur:'20–60 хв',
+        hist:'Anapanasati Sutta (Majjhima Nikaya 118), Тхеравада — Будда проголосив через 7 тижнів після просвітлення. С.Н. Гоєнка відродив традицію в Бірмі через Шьяджи У Ба Кхіна. 10-денні ретрити Noble Silence зберігають автентичну форму.',
+        desc:'Увага спрямовується на природне дихання — без маніпуляцій, без керування. 16 кроків ведуть від базової усвідомленості дихання до прямого прозріння в непостійність усіх явищ.',
+        tech:'Спрямуйте увагу на точку під ніздрями де повітря торкається шкіри. Не керуйте диханням — просто спостерігайте. Коли розум відходить — без самозасудження поверніться. Через 15–20 хв виникає природна тиша між вдихом і видихом.',
+        vars:['Samatha: утримання уваги до рівня Jhana (глибокого поглинання)','Vipassana: спостереження виникнення і зникнення відчуттів','Ходяча Anapanasati: синхронізація кроку і дихання','Групова: Noble Silence ретрит Гоєнки (10 днів)']},
+       {id:'B2',nm:'Vipassana Body Scan', sb:'Сканування тіла',
+        who:'ME',where:'WEST',when:'SUMMER',dur:'45–60 хв',
+        hist:'Систематичне сканування в традиції Гоєнки через Лєді Саядо (1846–1923, Бірма). Лєді Саядо зробив Vipassana доступною для мирян — раніше була тільки для монахів. Нейронаука: активує острівну частку кори (Insula), знижує активність Default Mode Network.',
+        desc:'Повільне переміщення уваги від маківки до стіп — рівномірно, без поспіху. Кожне відчуття — тепло, тиск, поколювання, оніміння — спостерігається рівно, без реакції.',
+        tech:'Починайте від маківки. Рухайте увагу вниз ділянками 3–5 см. Не змінюйте і не відштовхуйте жодного відчуття. Ціль — free flow: суцільна нерозривна хвиля усвідомлення від голови до стіп і назад.',
+        vars:['Gross sensations (початківці): великі відчуття тиску і температури','Subtle sensations (досвідчені): тонкі вібрації по всій поверхні','Free flow без зупинок: повна хвиля за 10–15 хв','Групова: ретрит Гоєнки (дні 5–10)']},
+       {id:'B3',nm:'Zazen · Shikantaza',  sb:'Просто сидіти',
+        who:'ME',where:'NORTH',when:'WINTER',dur:'25–40 хв',
+        hist:'Шікантаза (只管打坐, «лише це цілковите сидіння») — Доген Зенджі (1200–1253) після навчання у Тяньтун Жуцзін у Китаї. Доген стверджував: «Практика і просвітлення тотожні — сидіти в Zazen і є вже бути Буддою». Lutz et al. (2004, PNAS): gamma-синхронність у тім\'яних і лобних ділянках.',
+        desc:'Практика без об\'єкта і без мети. Поза є самою практикою. Думки виникають — добре. Зникають — добре. Жодного вибору, жодного втручання.',
+        tech:'Лотос або напівлотос. Дгяна-мудра: права долоня у лівій, великі пальці злегка торкаються. Очі напівзакриті, погляд 45° вниз. Хребет прямий — не через зусилля а через укоріненість. Просто сидіть.',
+        vars:['Koan Zazen (Rinzai): сидіння з живим не-концептуальним Коаном «Mu!»','Kinhin: повільна ходяча медитація між сесіями Zazen','Samu: медитація в щоденній праці (прибирання, садівництво)','Sesshin: 7-денний ретрит 12+ год Zazen на день']},
+       {id:'B4',nm:'Tonglen',             sb:'Брати і давати',
+        who:'WE',where:'SOUTH',when:'AUTUMN',dur:'20–30 хв',
+        hist:'Тонглен (གཐོང་ལེན, «відпускати і отримувати») — серцева практика Lojong (Тренування розуму) Атіші (982–1054). Чекава Єше Дордже (XII ст.) склав «Сім точок тренування розуму». Richard Davidson (Wisconsin, 2004): 8 тижнів Tonglen підвищують gamma-хвилі у лівій PFC і активують нейральні мережі альтруїзму.',
+        desc:'Перевертає природний імпульс відсторонення від страждання. Вдих — свідомо приймаєш чийсь біль у серце. Видих — надсилаєш полегшення і щастя. Культивує Бодгічітту — прагнення пробудження заради всіх істот.',
+        tech:'Вдих: темне щільне диміло болю входить у серце — не відштовхуй. Видих: яскраве тепле світло полегшення і щастя розходиться назовні. Коло: я → близькі → нейтральні → вороги → всі істоти без межі.',
+        vars:['Для себе: починайте з власного болю щоб не було абстрактним','Для конкретної людини яка зараз страждає','Для ворога: найвища і найважча форма','Груповий Tonglen у колі: спільне поле прийняття']},
+       {id:'B5',nm:'Dzogchen · Rigpa',    sb:'Природа розуму як вона є',
+        who:'THEY',where:'NORTH',when:'WINTER',dur:'Без обмежень',
+        hist:'Дзогчен (རྫོགས་ཆེན, «Велика Досконалість») — Падмасамбгава (VIII ст.) передав 25 учням після приходу в Тибет. Найвища система тибетської Ньїнгма і Бон. Намхай Норбу Рінпоче (1938–2018) відкрив для Заходу через Дзогчен Спільноту. fMRI: знижує DMN і активність ego-мереж.',
+        desc:'Не метод досягнення — пряме впізнавання того що вже є прямо зараз. Рігпа: відкрита, яскрава, порожня усвідомленість як справжня природа кожного розуму.',
+        tech:'Після вказівки вчителя: не медитуйте «про» щось і не намагайтесь зупинити думки. Дозвольте усвідомленості спочивати у собі. Думки виникають у рігпа, у рігпа залишаються, у рігпа зникають — вони є рухом усвідомленості, не перешкодою.',
+        vars:['Трекчо (прорізання надміру): рігпа у стані спокою — Шінай','Тогал (безпосереднє перевищення): візійні практики зі сонцем і темрявою','Бардо-практики: підготовка свідомості до стану між смертю і народженням','Рігпа у дії: утримання між двома думками протягом дня']},
+       {id:'B6',nm:'Metta Bhavana',       sb:'Любляча доброта',
+        who:'WE',where:'EAST',when:'SUMMER',dur:'20–45 хв',
+        hist:'Метта Бгавана — Каранія Метта Сутта (Sn 1.8), одна з чотирьох Брахма-Вігар: Metta (доброта), Karuna (співчуття), Mudita (радість), Upekkha (рівновага). Barbara Fredrickson (UNC, 2013, Psychological Science): 6-тижнева практика LKM підвищує позитивні емоції і будує «психологічні ресурси».',
+        desc:'Систематичне культивування безумовної доброти через фрази і образи. Це практика волі — не очікування пасивного відчуття — активне направлення наміру.',
+        tech:'Оселіться в серці. «Нехай я буду щасливим. Здоровим. У безпеці. У мирі.» Відчуйте тепло. Потім надсилайте те ж саме: близьким → нейтральним → важким людям → всім істотам без межі.',
+        vars:['Walking Metta: доброта кожному зустрічному під час ходьби','Karuna Bhavana: акцент на стражданні (2-га Brahma-vihara)','Mudita: медитація на радість від щастя інших (3-тя)','Tonglen як «темна дзеркальна версія» Metta']},
+     ]},
+    {key:'hindu', icon:'◈', color:'#C07A10', lt:'#E8A830', bg:'rgba(192,122,16,.07)',
+     nm:'Індуїзм', sub:'Веданта · Йога · Тантра',
+     desc:'Найдавніша жива медитативна традиція. Три шляхи до звільнення (Мокша): Джнана (знання-пізнання), Бгакті (відданість-любов), Раджа (медитація-контроль). Коріння — у Ведах (1500 до н.е.) і Упанішадах.',
+     schools:['Адвайта Веданта (Шанкара)','Раджа-Йога (Патанджалі)','Хатха-Йога','Кашмірський Шаїзм','Тантра (Шакта)'],
+     prac:[
+       {id:'H1',nm:'Pranayama',           sb:'Контроль Прани',
+        who:'ME',where:'EAST',when:'SPRING',dur:'15–40 хв',
+        hist:'Четверта з восьми гілок Аштанга-Йоги Патанджалі (Йога-Сутри, II ст. до н.е.). Хатха-Йога Прадіпіка (XV ст.) систематизує вісім основних технік. Йога-Сутра 2.49: «пранаяма є регуляція вдиху і видиху». Streeter et al. (2010, Journal of Alternative Medicine): Naди Шодхана підвищує GABA на 27%, знижує тривогу.',
+        desc:'Маніпуляція тонкою енергією (Праною) через регуляцію дихання. Четверта гілка є мостом між зовнішніми практиками (Яма, Ніяма, Асана) і внутрішніми (Пратьяхара, Дгарана, Дгьяна, Самадгі).',
+        tech:'Наді Шодхана: закрийте праву ніздрю → вдих лівою (4 рахунки) → затримка (16) → видих правою (8) → вдих правою (4) → затримка (16) → видих лівою (8). Один цикл. Повторіть 7–10 разів.',
+        vars:['Naди Шодхана: балансування Іда/Пінгала каналів','Ujjayi: звуження гортані — активація парасимпатики і тепло','Bhastrika: ритмічні інтенсивні вдихи-видихи — очищення і активація','Kumbhaka: затримка між диханнями — двері до внутрішньої тиші']},
+       {id:'H2',nm:'Atma Vichara',        sb:'Хто я?',
+        who:'ME',where:'NORTH',when:'AUTUMN',dur:'Безперервно',
+        hist:'Рамана Махарші (1879–1950) відкрив Атма-Вічару спонтанно у 16 років під час переживання смерті у Тіруваннамалаї. «Хто я?» (1901) — найстисліший текст. Адвайта Веданта: відрізняється від Неті-Неті тим що не відкидає а стежить до джерела. Сучасні вчителі: Адьяшанті, Руперт Спіра, Муджі.',
+        desc:'Увага спрямовується не на будь-який об\'єкт а на самого суб\'єкта: до витоку відчуття «я» де воно врешті розчиняється у чистому Усвідомленні.',
+        tech:'Коли виникає думка або відчуття — замість того щоб слідувати за змістом, запитайте: «Кому це виникає?» → «Мені.» → «Хто цей я? Звідки виходить це відчуття я?» Стежте за я-відчуттям назад до його витоку — не словесно а пильним поглядом.',
+        vars:['Формальна практика: 30–60 хв сидячи у тиші','У момент сильної емоції: «Кому боляче? Хто злиться?»','Після Неті-Неті: логічний перехід від заперечення до пошуку','Безперервна 24/7: питання живе фоном весь день']},
+       {id:'H3',nm:'Neti Neti',           sb:'Не це, не це',
+        who:'ME',where:'NORTH',when:'WINTER',dur:'20–40 хв',
+        hist:'«Нети нети» — Бріхадараньяка Упанішада (700–800 до н.е.): Ягняволк\'я описує Брахмана через повне заперечення. Шанкара (788–820) систематизує метод в Адвайта Веданті у «Вівекачудаманіх». Логіка: якщо я можу спостерігати X — я не можу бути X.',
+        desc:'Апофатичне самодослідження: систематичне заперечення всього що не є чистим Атманом. Залишається те що неможливо заперечити — чисте усвідомлення.',
+        tech:'«Я усвідомлюю своє тіло — отже я не є тілом.» Далі — до відчуттів: «Я усвідомлюю — не є ними.» До думок. До відчуття ego. «Хто усвідомлює?» Залишайтесь у цьому питанні без словесної відповіді.',
+        vars:['Джнана-Йога: повний 4-кроковий шлях (Вівека, Вайраґья, Шатсампат, Мумукшутва)','Аналіз трьох станів: бодрствування / сновидіння / глибокий сон','Поєднання з Атма-Вічарою: Неті-Неті розчищає, Вічара знаходить','Нісаргадатта Махарадж: «Я є Те» (1973)']},
+       {id:'H4',nm:'Kundalini',           sb:'Пробудження вогняної змії',
+        who:'ME',where:'SOUTH',when:'SUMMER',dur:'20–40 хв',
+        hist:'Кундаліні Шакті описана у Хатха-Йога Прадіпіці (XV ст.) і Тантра-Лоці Абгінавагупти (X ст., Кашмір). Традиція передачі від вчителя до учня через Шакті-пат. Практика потребує підготовленого тіла (Асана, Пранаяма) і кваліфікованого вчителя — інакше можливі дестабілізуючі ефекти.',
+        desc:'Кундаліні Шакті — дрімаюча потенційна енергія у Муладхара-чакрі. Підйом по Сушумна-наді крізь 7 чакр до Сахасрари описують як шлях від індивідуальної свідомості до космічної.',
+        tech:'Мула-бандха → Уддіяна-бандха → Джаландхара-бандха (три замки одночасно). Бгастріка 20 повторень → повний вдих → Кумбхака з усіма бандхами → повільний видих. Візуалізація підйому золотого вогню.',
+        vars:['Шакті-пат: пряма передача пробудження від вчителя учню','Кундаліні Йога Ягі Бхаджана: крійї і мантри у динамічних послідовностях','Лайя Йога: розчинення свідомості у чакрах і звукових вібраціях','Пранаяма-шлях: поступове пробудження через систематичну роботу з диханням']},
+       {id:'H5',nm:'Yoga Nidra',          sb:'Йогічний сон',
+        who:'ME',where:'WEST',when:'WINTER',dur:'30–45 хв',
+        hist:'Йога-Нідра систематизована Свамі Сатьянандою Сарасваті (Bihar School of Yoga, 1970-і) на основі Тантри і Санкх\'ї. Санкальпа (вирішення, намір) вводиться у гіпнагогічному стані максимальної рецептивності свідомості. Richard Miller (iRest, 2006): адаптація для лікування ПТСР у ветеранів.',
+        desc:'Йога-Нідра — стан між бодрствуванням і сном де свідомість залишається активною і рецептивною а тіло повністю розслаблене. Санкальпа проникає глибоко у підсвідоме.',
+        tech:'Шавасана. Три рази Санкальпа з повним відчуттям. Обертання уваги по 61 точці тіла. Пари протилежностей (важкість/легкість, тепло/холод). Знову Санкальпа. Ментальна візуалізація. Поступове повернення.',
+        vars:['11-стадійна Йога-Нідра Сатьянанди: повна Bihar School форма','iRest (Richard Miller): адаптація для травми і хронічного болю','Самостійна практика без запису: внутрішній голос як ведучий','Нідра на природі: земля або трава як природна підтримка']},
+       {id:'H6',nm:'Japa · Mantra',       sb:'Медитація на мантрі',
+        who:'ME',where:'EAST',when:'SPRING',dur:'20–60 хв',
+        hist:'Джапа (जप, «повторювати пошепки») — центральна практика Бгакті-Йоги і Тантри. Мала (माला) з 108 зерен: число 108 = кількість відстаней Земля–Сонце у сонячних діаметрах, а також 108 наді (каналів) що сходяться у серці. Санскритські мантри побудовані за точними вібраційними принципами Нада-йоги (йоги звуку).',
+        desc:'Медитативне повторення сакральних складів. Три рівні тонкості: Вайкарі (вголос) → Упамшу (пошепки) → Манасіка (подумки). Найтонший рівень — найглибший і найефективніший.',
+        tech:'Мала у правій руці між великим і безіменним пальцями. Вказівний палець не торкається зерен. Починайте вголос. Через 5–10 хв переходьте до пошепки. Поступово переходьте до чистого внутрішнього повторення — манасіка.',
+        vars:['Вайкарі → Упамшу → Манасіка: три рівні занурення','Кіртан: груповий спів мантр у відданості (Бгакті)','Аджапа-Джапа: «мантра що не повторюється» — Со-Хам з кожним диханням','Тратака + Мантра: одночасна концентрація зору і звуку']},
+     ]},
+    {key:'daoist', icon:'◌', color:'#1B6B4A', lt:'#40B87E', bg:'rgba(27,107,74,.07)',
+     nm:'Даосизм', sub:'Цігун · Нейдан · Цзо-Ван',
+     desc:'Шлях злиття з Дао — вічним природним порядком. Три виміри: Цігун (рух і дихання), Нейдан (внутрішня алхімія), Цзо-Ван (велике забуття). Принцип У-Вей: дія через не-дію.',
+     schools:['Класичний Даосизм (Чжуанцзі)','Школа Квань-Чжен','Школа Чжен-І','Тайцзи Чуань','Нейдан (внутрішня алхімія)'],
+     prac:[
+       {id:'D1',nm:'Zuowang',            sb:'Сидіти у забутті',
+        who:'THEY',where:'NORTH',when:'WINTER',dur:'20 хв — кілька год',
+        hist:'Цзо-Ван (坐忘, «сидіти у забутті») — Чжуанцзі (369–286 до н.е.) у розмові Конфуція і Янь Хуя: «Я скинув кінцівки і відкинув знання, покинув форму і відкинув розум, і так злився з Великим Єдиним». Сунь Сіміао (581–682) систематизує 7 ступенів. Традиція Квань-Чжен (Повного Вдосконалення, XII ст.) зберегла до наших днів.',
+        desc:'坐忘 — повне відпускання в порядку від зовнішнього до найтоншого. Тіло забуте, думки відкинуті, межа між собою і Дао розчиняється. Не метод досягнення — У-Вей: дія через недіяння.',
+        tech:'Відпускайте послідовно: зовнішній обряд і форма → соціальна роль → потік думок → відчуття Я → відчуття тіла → саме сприйняття → велике забуття. Немає техніки — є тільки У-Вей.',
+        vars:['Цівулунь (齊物論): читання Чжуанцзі як підготовча практика рівняння речей','Нейдан: Цзо-Ван як вища стадія Внутрішньої Алхімії (丹)','Вуцзі: нерухома стояча поза 5–10 хв до і після Цзо-Ван','Сон як природний Цзо-Ван: усвідомлений перехід у сон']},
+       {id:'D2',nm:'Nei Guan',           sb:'Внутрішнє споглядання',
+        who:'ME',where:'WEST',when:'WINTER',dur:'30–45 хв',
+        hist:'Нейгуань (內觀, «внутрішнє споглядання») описана у Хуантін Цзін (黃庭經, Канон Жовтого Дворища, III–IV ст.): кожен орган є маленьким сяючим божеством. Тао Хунцзін (456–536) і Сунь Сіміао (581–682) систематизують практику. Мантак Чіа (Universal Tao, 1979) поширив на Захід у форматі «Мікрокосмічна Орбіта».',
+        desc:'內觀 — спрямування уваги до органів, меридіанів і трьох Дантянів. Тіло є космосом у мініатюрі: Серце = Вогонь і Південь, Нирки = Вода і Північ, Печінка = Дерево і Схід.',
+        tech:'Нижній Дантянь (3 см нижче пупа): уявляйте там кулю золотого теплого світла. Вдих — куля розширюється. Видих — стабілізується і ущільнюється. Потім піднімайтесь: Середній Дантянь (центр грудини) → Верхній (між бровами).',
+        vars:['Three Dan Tian: послідовна активація Нижнього → Середнього → Верхнього','Мікрокосмічна Орбіта (小周天): Ці рухається по хребту вгору і грудині вниз','Six Healing Sounds + Нейгуань: органи і звуки одночасно','П\'ять Елементів: кольори і якості органів у візуалізації']},
+       {id:'D3',nm:'Zhan Zhuang',        sb:'Стояча медитація',
+        who:'ME',where:'NORTH',when:'SPRING',dur:'20–60 хв',
+        hist:'Зан Чжуан (站樁, «стояти як стовп») — Ван Сянцзай (1885–1963) зробив основою Іцюань після навчання у Ґуо Юньшень. Традиція Бацзіцюань і Тайцзи Чуань використовує стоячу позу як базу. Sancier (2004, Qigong Institute): знижує систолічний тиск, покращує вестибулярний баланс.',
+        desc:'Парадокс практики: повна зовнішня нерухомість породжує максимальний внутрішній рух. Акумуляція Нейцзін (внутрішньої сили). Одночасна заземленість і відкритість.',
+        tech:'Ноги на ширині плечей, коліна злегка зігнуті, таз підтягнутий. Руки «обіймають велике дерево» на рівні пупа. Уявляйте: ноги — корені в землю, тім\'я — до неба. Через 5–10 хв виникає тепло, вібрація і відчуття пульсу Ці.',
+        vars:['Іцюань: стояча поза + ментальне тренування різних намірів (Іsі)','Да Чен Цюань (大成拳): повна система «Великого досягнення»','Гун Юань Чжуан: «Первинна порожнеча» — максимальне розслаблення у позі','Тайцзи Pile Standing: підготовча поза перед вивченням форми']},
+       {id:'D4',nm:'Qigong · Ba Duan Jin',sb:'Вісім шматків парчі',
+        who:'ME',where:'EAST',when:'SPRING',dur:'20–30 хв',
+        hist:'Ба Дуань Цзінь (八段錦, «Вісім шматків парчі») — перша письмова згадка у Хун Май (XIII ст., Сун-династія). Офіційно канонізована Держспорткомітетом КНР у 2003 р. ВООЗ (2019): Цігун включений до Переліку традиційних медичних практик. Lauche et al. (2013): мета-аналіз 22 досліджень — знижує АТ і хронічний біль.',
+        desc:'氣功 — координація руху, дихання і уваги. Три рівні Цігун: Цзін-Гун (статичний), Дун-Гун (динамічний, наприклад Ба Дуань Цзінь), І-Гун (ментальний). Найпоширеніша динамічна форма у світі.',
+        tech:'1-й рух «Тримати небо двома руками»: повільно підіймайте руки з боків вгору (вдих) → долоні з\'єднались над головою → натискайте вгору розтягуючи хребет від стіп до долонь → повільно вниз (видих), Ці опускається в Дантянь. 8 повторень.',
+        vars:['Повна Ба Дуань Цзінь: всі вісім рухів у послідовності (20–30 хв)','У Цінь Сі (五禽戲, П\'ять тварин): Тигр, Олень, Ведмідь, Мавпа, Журавель','Лю Цзі Це (六字訣, Шість цілющих звуків): рух органів + звук видиху','Тайцзи Чуань (太極拳): повна медитативна форма рухів']},
+       {id:'D5',nm:'Six Healing Sounds', sb:'Шість цілющих звуків',
+        who:'ME',where:'SOUTH',when:'AUTUMN',dur:'15–30 хв',
+        hist:'Лю Цзі Це (六字訣) — Тао Хунцзін (456–536) перший систематизував у «Yangxing yanming lu». Сунь Сіміао (581–682) розвинув у «Цяньцзін Яофан». Кожен звук вібраційно резонує з одним органом і звільняє застояні емоції пов\'язані з цим органом.',
+        desc:'六字訣 — шість видихів-звуків трансформують застояну Ці в органах. Видих через звук звільняє патогенні емоції; тихий вдих наповнює орган свіжою цілющою Ці.',
+        tech:'Кожен звук — 6 разів на повільному видиху, тихо або подумки. Між звуками: тихий вдих і усвідомлення органу що пульсує. Сюй (肝/печінка, злість): шш... Хе (心/серце, нетерпіння): хе̄... Ху (脾/селезінка, хвилювання): ху... Си (肺/легені, смуток): ссс... Чуей (腎/нирки, страх): чуей... Сі (三焦/три обігрівачі): сі...',
+        vars:['З рухами: повна форма Лю Цзі Це з традиційними жестами кожного органу','Тільки Сюй (Xu) для зниження хронічного стресу і пригніченої злості','Нейгуань + звуки одночасно: споглядання органу і його звук','Хе + Чуей перед сном: баланс Серця (Вогонь) і Нирок (Вода)']},
+     ]},
+  ];
+
+  // build nav
+  const navCfg=[
+    {id:'taxo',     lbl:'Таксономія',   cls:'',   dot:'var(--faint)'},
+    {id:'axes',     lbl:'Осі SUBIT',    cls:'',   dot:'var(--faint)'},
+    {id:'buddhist', lbl:'Буддизм',      cls:'tb', dot:'#2E5CAA'},
+    {id:'hindu',    lbl:'Індуїзм',      cls:'th', dot:'#C07A10'},
+    {id:'daoist',   lbl:'Даосизм',      cls:'td', dot:'#1B6B4A'},
+  ];
+  document.getElementById('t-topnav').innerHTML=navCfg.map((n,i)=>
+    `<button class="tnb ${n.cls}${i===0?' on':''}" id="tn-${n.id}" onclick="switchTheory('${n.id}')">
+       <span class="tnb-dot" style="background:${n.dot}"></span>${n.lbl}
+     </button>`).join('');
+
+  function wc(who){return PHASES[who]?.color||'#888'}
+
+  function pracHTML(pr, tg){
+    return`<div class="tpi trad-${tg.key}" id="tpi-${pr.id}">
+      <div class="tpi-hd" onclick="togTPI('${pr.id}')">
+        <span class="tpi-num">${pr.id}</span>
+        <div class="tpi-main">
+          <div class="tpi-nm">${x(pr.nm)}</div>
+          <div class="tpi-sb">${x(pr.sb)}</div>
+        </div>
+        <div class="tpi-meta">
+          <span class="tpi-ww">${DIRS[pr.where].sym}${pr.where[0]}</span>
+          <span class="tpi-ww">${SEAS[pr.when].sym}${pr.when.slice(0,2)}</span>
+          <span class="tpi-who" style="color:${wc(pr.who)};border-color:${wc(pr.who)}55">${pr.who}</span>
+        </div>
+        <span class="tpi-arr">›</span>
+      </div>
+      <div class="tpi-body">
+        <div class="tpi-dur"><span>⏱</span>${x(pr.dur)}<span class="tpi-dtrad">${x(tg.nm)}</span></div>
+        <div class="tpi-hist">
+          <div class="tpi-hh"><span>◎</span> Контекст</div>
+          <div class="tpi-ht">${x(pr.hist)}</div>
+        </div>
+        <div class="tpi-slbl">Опис практики</div>
+        <div class="tpi-desc">${x(pr.desc)}</div>
+        <div class="tpi-slbl">Техніка виконання</div>
+        <div class="tpi-tech">${x(pr.tech)}</div>
+        <div class="tpi-slbl">Варіанти і традиції</div>
+        <div class="tpi-vars">${pr.vars.map(v=>`<div class="tpi-var">${x(v)}</div>`).join('')}</div>
+        <button class="tpi-open" onclick="openInAtlas('${pr.who}','${pr.where}','${pr.when}')">
+          Відкрити архетип в атласі →
+        </button>
+      </div>
+    </div>`;
+  }
+
+  function tradHTML(tg){
+    return`<div class="t-sec" id="s-${tg.key}">
+      <div class="t-trad-card" style="background:${tg.bg};border-color:${tg.color}22">
+        <span class="t-trad-icon">${tg.icon}</span>
+        <div>
+          <div class="t-trad-nm" style="color:${tg.color}">${tg.nm} — ${tg.sub}</div>
+          <div class="t-trad-desc">${tg.desc}</div>
+          <div class="t-schools">${tg.schools.map(s=>`<span class="t-school">${s}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="t-pracs">${tg.prac.map(pr=>pracHTML(pr,tg)).join('')}</div>
+    </div>`;
+  }
+
+  const secTaxo=`<div class="t-sec on" id="s-taxo">
+    <div class="t-hd">Сім родів медитативних практик</div>
+    <p class="t-intro">Всі практики трьох традицій розподіляються за механізмом дії свідомості. Режими PRIME · SYNC · SCAN · CORE задають контекст.</p>
+    <div class="t-taxo">${TAXO.map(t=>`
+      <div class="t-ti">
+        <span class="t-tn">${t.n}</span>
+        <div class="t-tb"><div class="t-tnm">${t.nm}</div><div class="t-tmc">${t.mech}</div></div>
+        <span class="t-tq">${t.q}</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  const secAxes=`<div class="t-sec" id="s-axes">
+    <div class="t-hd">Три осі SUBIT</div>
+    <p class="t-intro">SUBIT = WHO × WHERE × WHEN. Чотири режими: PRIME · SYNC · SCAN · CORE. 2⁶ = 64 архетипи.</p>
+    <div class="t-hd" style="font-size:.85rem;margin-top:1.2rem">WHO — Режим (PRIME · SYNC · SCAN · CORE) b₁b₂</div>
+    <div class="t-axes">${['ME','WE','YOU','THEY'].map(w=>{const p=PHASES[w];return`
+      <div class="t-ac">
+        <div class="t-ac-h"><span class="t-ac-sym">${p.glyph}</span>
+          <span class="t-ac-name" style="color:${p.color}">${w}</span>
+          <span class="t-ac-bits">${p.bits}</span></div>
+        <div class="t-ac-desc" style="color:${p.color}">${p.name}</div>
+        <div class="t-ac-sub">${p.desc}</div>
+      </div>`;}).join('')}</div>
+    <div class="t-hd" style="font-size:.85rem;margin-top:1.2rem">WHERE — Просторовий Вектор b₃b₄</div>
+    <div class="t-axes">${['EAST','SOUTH','WEST','NORTH'].map(w=>{const d=DIRS[w];return`
+      <div class="t-ac">
+        <div class="t-ac-h"><span class="t-ac-sym" style="color:${d.color}">${d.sym}</span>
+          <span class="t-ac-name" style="color:${d.color}">${w}</span>
+          <span class="t-ac-bits">b₃b₄</span></div>
+        <div class="t-ac-desc">${d.el}</div>
+        <div class="t-ac-sub">${d.qi}</div>
+      </div>`;}).join('')}</div>
+    <div class="t-hd" style="font-size:.85rem;margin-top:1.2rem">WHEN — Часова Якість b₅b₆</div>
+    <div class="t-axes">${['SPRING','SUMMER','AUTUMN','WINTER'].map(w=>{const s=SEAS[w];return`
+      <div class="t-ac">
+        <div class="t-ac-h"><span class="t-ac-sym" style="color:${s.color}">${s.sym}</span>
+          <span class="t-ac-name" style="color:${s.color}">${w}</span>
+          <span class="t-ac-bits">b₅b₆</span></div>
+        <div class="t-ac-desc">${s.lbl}</div>
+        <div class="t-ac-sub">${s.en}</div>
+      </div>`;}).join('')}</div>
+  </div>`;
+
+  document.getElementById('theory').innerHTML=
+    secTaxo + secAxes + TRADS.map(tg=>tradHTML(tg)).join('');
+}
+
+function switchTheory(id){
+  ['taxo','axes','buddhist','hindu','daoist'].forEach(k=>{
+    const s=document.getElementById('s-'+k); if(s)s.classList.remove('on');
+    const b=document.getElementById('tn-'+k); if(b)b.classList.remove('on');
+  });
+  const s=document.getElementById('s-'+id); if(s)s.classList.add('on');
+  const b=document.getElementById('tn-'+id); if(b)b.classList.add('on');
+  const sa=document.querySelector('.t-scroll-area'); if(sa)sa.scrollTop=0;
+}
+function togTPI(id){document.getElementById('tpi-'+id)?.classList.toggle('open');}
+
+// ── navigation ──
+function switchTab(t){
+  S.tab=t;
+  document.querySelectorAll('.tab').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nv').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+t).classList.add('on');
+  document.getElementById('nv-'+t).classList.add('on');
+}
+function setF(axis,val){
+  S.filter[axis]=S.filter[axis]===val?null:val;
+  renderSidebar();renderFbar();renderAtlas();
+}
+function clearF(){
+  S.filter={who:null,where:null,when:null,trad:null};
+  document.querySelectorAll('.tbp').forEach(b=>b.classList.remove('on'));
+  renderSidebar();renderFbar();renderAtlas();
+}
+function filterTrad(t){
+  S.filter.trad=S.filter.trad===t?null:t;
+  document.querySelectorAll('.tbp').forEach(b=>b.classList.remove('on'));
+  if(S.filter.trad)document.getElementById('tbadge-'+t)?.classList.add('on');
+  renderAtlas();
+}
+function pickArch(id){
+  S.sel=MAP64.find(a=>a.id===id)||null;
+  renderAtlas();
+  if(mob()){renderSheet();document.getElementById('dsheet').classList.add('open');}
+  else renderDetail();
+}
+function closeSheet(){document.getElementById('dsheet').classList.remove('open');}
+function openInAtlas(who,where,when){
+  S.sel=MAP64.find(a=>a.id===`${who}-${where}-${when}`)||null;
+  switchTab('atlas');renderAtlas();renderDetail();
+  if(S.sel)setTimeout(()=>document.querySelector('.card.sel')?.scrollIntoView({behavior:'smooth',block:'center'}),80);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('app').classList.add('show');
+  renderSidebar();renderFbar();renderAtlas();renderTheory();renderDetail();
+});
+
+</script>
+</body></html>
