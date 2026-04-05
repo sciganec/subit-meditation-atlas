@@ -124,10 +124,4 @@ subit-meditation-atlas/
 
 ---
 
-## Ліцензія
-
-[MIT License](LICENSE)
-
----
-
 *SUBIT · PRIME · SYNC · SCAN · CORE · {0,1}⁶ · 64*
